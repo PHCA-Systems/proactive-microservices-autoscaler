@@ -884,3 +884,31 @@ services:
       timeout: 10s
       retries: 10
     logging: *logging
+
+  # Metrics Collector for ML Training Data
+  metrics-collector:
+    image: ${IMAGE_NAME}:${DEMO_VERSION}-metrics-collector
+    container_name: metrics-collector
+    build:
+      context: ./
+      dockerfile: src/metrics-collector/Dockerfile
+      cache_from:
+        - ${IMAGE_NAME}:${IMAGE_VERSION}-metrics-collector
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+    restart: unless-stopped
+    environment:
+      - PROMETHEUS_URL=http://prometheus:9090
+      - COLLECTION_INTERVAL=5
+      - OTEL_RESOURCE_ATTRIBUTES
+      - OTEL_SERVICE_NAME=metrics-collector
+    depends_on:
+      prometheus:
+        condition: service_started
+      otel-collector:
+        condition: service_started
+    volumes:
+      - ./logs:/app/logs
+    logging: *logging
