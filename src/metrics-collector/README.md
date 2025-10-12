@@ -5,14 +5,15 @@ This service collects comprehensive real-time metrics from all microservices for
 ## Features
 
 - **Real-time data collection** every 5 seconds (configurable)
-- **Comprehensive metrics** including performance, resource usage, and business metrics
+- **30+ comprehensive metrics** including performance, resource usage, and application metrics
 - **Structured JSON output** optimized for ML training
-- **Service-aware** - collects data from all microservices
+- **Service-aware** - collects data from all 12 microservices
 - **Prometheus integration** - leverages existing monitoring infrastructure
+- **Derived ML features** - pre-computed efficiency and throughput metrics
 
 ## Metrics Collected
 
-Each log entry contains the following metrics for optimal ML training:
+Each log entry contains 30+ metrics for optimal ML training:
 
 ### Core Performance Metrics
 - `timestamp`: ISO 8601 timestamp
@@ -21,26 +22,41 @@ Each log entry contains the following metrics for optimal ML training:
 - `latency_p50_ms`: 50th percentile latency in milliseconds
 - `latency_p95_ms`: 95th percentile latency in milliseconds  
 - `latency_p99_ms`: 99th percentile latency in milliseconds
+- `latency_mean_ms`: Mean latency in milliseconds
 - `error_rate`: Error rate percentage
+- `success_rate`: Success rate percentage
 
 ### Resource Utilization
 - `cpu_percent`: CPU usage percentage
 - `memory_mb`: Memory usage in MB
 - `memory_utilization_percent`: Memory utilization as percentage of limit
-- `disk_io_mb_per_sec`: Disk I/O in MB/second
-- `network_io_mb_per_sec`: Network I/O in MB/second
+- `disk_read_mb_per_sec`: Disk read I/O in MB/second
+- `disk_write_mb_per_sec`: Disk write I/O in MB/second
+- `disk_io_mb_per_sec`: Total disk I/O in MB/second
+- `network_receive_mb_per_sec`: Network receive I/O in MB/second
+- `network_transmit_mb_per_sec`: Network transmit I/O in MB/second
+- `network_io_mb_per_sec`: Total network I/O in MB/second
 
 ### Application Metrics
 - `active_connections`: Number of active connections
 - `queue_depth`: Request queue depth
 - `response_size_kb`: Average response size in KB
+- `request_size_kb`: Average request size in KB
 - `thread_count`: Number of threads
 - `heap_usage_mb`: Heap memory usage in MB
 - `gc_collections_per_sec`: Garbage collection rate
+- `gc_pause_time_ms`: Average GC pause time in milliseconds
 
 ### Scaling Context
 - `replica_count`: Current number of replicas
 - `target_cpu_utilization`: Target CPU for autoscaling (70%)
+- `target_memory_utilization`: Target memory for autoscaling (70%)
+
+### Derived ML Features
+- `requests_per_connection`: Request efficiency per connection
+- `avg_response_time_ms`: Average response time
+- `throughput_mb_per_sec`: Data throughput in MB/second
+- `resource_efficiency_score`: Requests per unit of resource
 
 ## Usage
 
@@ -51,13 +67,16 @@ Each log entry contains the following metrics for optimal ML training:
    docker-compose up -d
    ```
 
-2. **Start metrics collection:**
+2. **Stream metrics in real-time:**
    ```bash
-   # On Linux/Mac
-   ./start_metrics_collection.sh
+   # From project root directory
+   ./start_ml_stream.sh
    
-   # On Windows
-   start_metrics_collection.bat
+   # Or save to file
+   ./start_ml_stream.sh -o logs/training_data.jsonl
+   
+   # Filter specific service
+   ./start_ml_stream.sh -s cart -o logs/cart_metrics.jsonl
    ```
 
 3. **Generate load** (in another terminal):
@@ -99,26 +118,39 @@ Environment variables:
 
 ```json
 {
-  "timestamp": "2024-01-15T10:30:45.123Z",
+  "timestamp": "2024-10-12T18:27:45.123Z",
   "service": "cart",
   "rps": 120.4,
+  "latency_p50_ms": 28.5,
+  "latency_p95_ms": 42.1,
+  "latency_p99_ms": 89.3,
+  "latency_mean_ms": 31.2,
+  "error_rate": 0.12,
+  "success_rate": 99.88,
   "cpu_percent": 57.8,
   "memory_mb": 243.2,
-  "latency_p95_ms": 42.1,
-  "latency_p50_ms": 28.5,
-  "latency_p99_ms": 89.3,
-  "error_rate": 0.12,
+  "memory_utilization_percent": 48.6,
+  "disk_read_mb_per_sec": 0.8,
+  "disk_write_mb_per_sec": 0.4,
+  "disk_io_mb_per_sec": 1.2,
+  "network_receive_mb_per_sec": 3.2,
+  "network_transmit_mb_per_sec": 2.2,
+  "network_io_mb_per_sec": 5.4,
   "active_connections": 15,
   "queue_depth": 3,
   "response_size_kb": 2.8,
-  "disk_io_mb_per_sec": 1.2,
-  "network_io_mb_per_sec": 5.4,
+  "request_size_kb": 1.2,
+  "thread_count": 12,
+  "heap_usage_mb": 180.5,
+  "gc_collections_per_sec": 0.8,
+  "gc_pause_time_ms": 2.1,
   "replica_count": 2,
   "target_cpu_utilization": 70.0,
-  "memory_utilization_percent": 48.6,
-  "gc_collections_per_sec": 0.8,
-  "thread_count": 12,
-  "heap_usage_mb": 180.5
+  "target_memory_utilization": 70.0,
+  "requests_per_connection": 8.03,
+  "avg_response_time_ms": 31.2,
+  "throughput_mb_per_sec": 0.33,
+  "resource_efficiency_score": 1.89
 }
 ```
 

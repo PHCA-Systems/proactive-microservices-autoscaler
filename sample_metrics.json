@@ -1,0 +1,1379 @@
+{
+  "metadata": {
+    "collection_start": "2025-10-13T01:22:56.429691",
+    "collection_end": "2025-10-13T01:23:06.745699",
+    "total_duration_seconds": 10.316012144088745,
+    "collection_interval_seconds": 5,
+    "total_snapshots": 2,
+    "services_monitored": {
+      "microservices": [
+        "cart",
+        "checkout",
+        "frontend",
+        "product-catalog",
+        "recommendation",
+        "payment",
+        "shipping",
+        "currency",
+        "email",
+        "ad",
+        "accounting",
+        "fraud-detection"
+      ],
+      "infrastructure": [
+        "prometheus",
+        "otel-collector",
+        "grafana",
+        "jaeger"
+      ]
+    }
+  },
+  "snapshots": [
+    {
+      "timestamp": "2025-10-13T01:22:56.429784",
+      "elapsed_seconds": 0.00010967254638671875,
+      "collection_interval": 5,
+      "load_generator": {
+        "available": false
+      },
+      "services": {
+        "microservices": {
+          "frontend": {
+            "container_id": "947a7ef0fe7d9d1019a5f4c6600613bdacb2b7c3d4a3a347ceeef0776e6b4cad",
+            "cpu_percent": 0.48,
+            "memory": {
+              "usage_bytes": 111673344.0,
+              "limit_bytes": 262144000.0,
+              "usage_mb": 106.5,
+              "limit_mb": 250.0,
+              "percent": 42.6
+            },
+            "network": {
+              "rx_bytes": 132120576.0,
+              "tx_bytes": 325058560.0,
+              "rx_mb": 126.0,
+              "tx_mb": 310.0
+            },
+            "block_io": {
+              "read_bytes": 113664.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.1083984375,
+              "write_mb": 0.0
+            },
+            "pids": 11
+          },
+          "checkout": {
+            "container_id": "84f2bff1787933669ef9db5506509eebe46611b20d01e480b97e823995980ab5",
+            "cpu_percent": 0.05,
+            "memory": {
+              "usage_bytes": 13348372.48,
+              "limit_bytes": 20971520.0,
+              "usage_mb": 12.73,
+              "limit_mb": 20.0,
+              "percent": 63.67
+            },
+            "network": {
+              "rx_bytes": 1373634.56,
+              "tx_bytes": 4508876.8,
+              "rx_mb": 1.31,
+              "tx_mb": 4.3
+            },
+            "block_io": {
+              "read_bytes": 1887436.8,
+              "write_bytes": 0.0,
+              "read_mb": 1.8,
+              "write_mb": 0.0
+            },
+            "pids": 14
+          },
+          "recommendation": {
+            "container_id": "bf597d40fc3eca4890033b3242dff1fe7459ff868b071b45788acee5d2c9b95c",
+            "cpu_percent": 1.0,
+            "memory": {
+              "usage_bytes": 47794094.08,
+              "limit_bytes": 524288000.0,
+              "usage_mb": 45.58,
+              "limit_mb": 500.0,
+              "percent": 9.12
+            },
+            "network": {
+              "rx_bytes": 79377203.2,
+              "tx_bytes": 32400998.4,
+              "rx_mb": 75.7,
+              "tx_mb": 30.9
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 4582277.12,
+              "read_mb": 0.0,
+              "write_mb": 4.37
+            },
+            "pids": 34
+          },
+          "product-catalog": {
+            "container_id": "613e9aa6c8b834a6869a60ee6e61fa027bed651ebc2dfd477d5229c02529f762",
+            "cpu_percent": 0.15,
+            "memory": {
+              "usage_bytes": 13212057.6,
+              "limit_bytes": 20971520.0,
+              "usage_mb": 12.6,
+              "limit_mb": 20.0,
+              "percent": 63.01
+            },
+            "network": {
+              "rx_bytes": 30094131.2,
+              "tx_bytes": 206569472.0,
+              "rx_mb": 28.7,
+              "tx_mb": 197.0
+            },
+            "block_io": {
+              "read_bytes": 474112.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.4521484375,
+              "write_mb": 0.0
+            },
+            "pids": 18
+          },
+          "accounting": {
+            "container_id": "0ad03f588faec966784478f2a57fd0e192a9e48c58ff0b80a6467ed64199006d",
+            "cpu_percent": 0.31,
+            "memory": {
+              "usage_bytes": 124990259.2,
+              "limit_bytes": 125829120.0,
+              "usage_mb": 119.2,
+              "limit_mb": 120.0,
+              "percent": 99.31
+            },
+            "network": {
+              "rx_bytes": 2149580.8,
+              "tx_bytes": 3680501.76,
+              "rx_mb": 2.05,
+              "tx_mb": 3.51
+            },
+            "block_io": {
+              "read_bytes": 35441868.8,
+              "write_bytes": 2558525.44,
+              "read_mb": 33.8,
+              "write_mb": 2.44
+            },
+            "pids": 25
+          },
+          "email": {
+            "container_id": "7d3ad71b080788d48e33861c33e211d3b7b240eb5919b9b4bc0d5085a90cfe2b",
+            "cpu_percent": 0.09,
+            "memory": {
+              "usage_bytes": 50772049.92,
+              "limit_bytes": 104857600.0,
+              "usage_mb": 48.42,
+              "limit_mb": 100.0,
+              "percent": 48.42
+            },
+            "network": {
+              "rx_bytes": 381952.0,
+              "tx_bytes": 355328.0,
+              "rx_mb": 0.3642578125,
+              "tx_mb": 0.3388671875
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 16793.6,
+              "read_mb": 0.0,
+              "write_mb": 0.016015625
+            },
+            "pids": 23
+          },
+          "fraud-detection": {
+            "container_id": "38e2d6d81102ec1f774624b624cefdb6503849173b3ca3a5e3be36665a49129b",
+            "cpu_percent": 0.51,
+            "memory": {
+              "usage_bytes": 310693068.8,
+              "limit_bytes": 314572800.0,
+              "usage_mb": 296.3,
+              "limit_mb": 300.0,
+              "percent": 98.77
+            },
+            "network": {
+              "rx_bytes": 1719664.64,
+              "tx_bytes": 3984588.8,
+              "rx_mb": 1.64,
+              "tx_mb": 3.8
+            },
+            "block_io": {
+              "read_bytes": 189792256.0,
+              "write_bytes": 205520896.0,
+              "read_mb": 181.0,
+              "write_mb": 196.0
+            },
+            "pids": 54
+          },
+          "payment": {
+            "container_id": "f05fc6234baed3419f130e33c67e66e71c2d8f959ad27338d36ac2ebc0112f7e",
+            "cpu_percent": 1.03,
+            "memory": {
+              "usage_bytes": 99478405.12,
+              "limit_bytes": 125829120.0,
+              "usage_mb": 94.87,
+              "limit_mb": 120.0,
+              "percent": 79.06
+            },
+            "network": {
+              "rx_bytes": 300032.0,
+              "tx_bytes": 1782579.2,
+              "rx_mb": 0.2861328125,
+              "tx_mb": 1.7
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.0,
+              "write_mb": 0.0
+            },
+            "pids": 12
+          },
+          "shipping": {
+            "container_id": "4900261c915a0e16b2aa8143f419052c15a2f6d66e4c2b693df4a2eb067bdc43",
+            "cpu_percent": 0.15,
+            "memory": {
+              "usage_bytes": 6254755.84,
+              "limit_bytes": 20971520.0,
+              "usage_mb": 5.965,
+              "limit_mb": 20.0,
+              "percent": 29.82
+            },
+            "network": {
+              "rx_bytes": 543744.0,
+              "tx_bytes": 1310720.0,
+              "rx_mb": 0.5185546875,
+              "tx_mb": 1.25
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.0,
+              "write_mb": 0.0
+            },
+            "pids": 17
+          },
+          "currency": {
+            "container_id": "9321cad304fa1556d08d7dc0853a15ab41e74025b9a31679ad34acfe6ff5dafe",
+            "cpu_percent": 0.11,
+            "memory": {
+              "usage_bytes": 3543138.304,
+              "limit_bytes": 20971520.0,
+              "usage_mb": 3.379,
+              "limit_mb": 20.0,
+              "percent": 16.89
+            },
+            "network": {
+              "rx_bytes": 541696.0,
+              "tx_bytes": 1174405.12,
+              "rx_mb": 0.5166015625,
+              "tx_mb": 1.12
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.0,
+              "write_mb": 0.0
+            },
+            "pids": 21
+          },
+          "ad": {
+            "container_id": "be20a47dc3cc3481bfc0eae7d3384a4221279a9776aabe7d94cd1a5e88877f32",
+            "cpu_percent": 0.13,
+            "memory": {
+              "usage_bytes": 299368448.0,
+              "limit_bytes": 314572800.0,
+              "usage_mb": 285.5,
+              "limit_mb": 300.0,
+              "percent": 95.16
+            },
+            "network": {
+              "rx_bytes": 290816.0,
+              "tx_bytes": 1677721.6,
+              "rx_mb": 0.27734375,
+              "tx_mb": 1.6
+            },
+            "block_io": {
+              "read_bytes": 158334976.0,
+              "write_bytes": 186646528.0,
+              "read_mb": 151.0,
+              "write_mb": 178.0
+            },
+            "pids": 53
+          },
+          "cart": {
+            "container_id": "6532c7f751ec0dd014da0ce686686306479d637f1a936190825e700a1b285d31",
+            "cpu_percent": 0.1,
+            "memory": {
+              "usage_bytes": 81327554.56,
+              "limit_bytes": 167772160.0,
+              "usage_mb": 77.56,
+              "limit_mb": 160.0,
+              "percent": 48.47
+            },
+            "network": {
+              "rx_bytes": 21495808.0,
+              "tx_bytes": 76965478.4,
+              "rx_mb": 20.5,
+              "tx_mb": 73.4
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.0,
+              "write_mb": 0.0
+            },
+            "pids": 46
+          }
+        },
+        "infrastructure": {
+          "otel-collector": {
+            "container_id": "d065f22d5774d68aa849b0ca51e3612f758cbefebc753e938daad6afeed0f40f",
+            "cpu_percent": 2.29,
+            "memory": {
+              "usage_bytes": 145437491.2,
+              "limit_bytes": 209715200.0,
+              "usage_mb": 138.7,
+              "limit_mb": 200.0,
+              "percent": 69.34
+            },
+            "network": {
+              "rx_bytes": 550502400.0,
+              "tx_bytes": 385875968.0,
+              "rx_mb": 525.0,
+              "tx_mb": 368.0
+            },
+            "block_io": {
+              "read_bytes": 6249512.96,
+              "write_bytes": 0.0,
+              "read_mb": 5.96,
+              "write_mb": 0.0
+            },
+            "pids": 18
+          },
+          "prometheus": {
+            "container_id": "3e72ecf4b0e18f8aecc8e39ca1a682816ef6148e81c754374e4989c2699c9ce4",
+            "cpu_percent": 0.0,
+            "memory": {
+              "usage_bytes": 191994265.6,
+              "limit_bytes": 314572800.0,
+              "usage_mb": 183.1,
+              "limit_mb": 300.0,
+              "percent": 61.05
+            },
+            "network": {
+              "rx_bytes": 114294784.0,
+              "tx_bytes": 80635494.4,
+              "rx_mb": 109.0,
+              "tx_mb": 76.9
+            },
+            "block_io": {
+              "read_bytes": 1709178.88,
+              "write_bytes": 66584576.0,
+              "read_mb": 1.63,
+              "write_mb": 63.5
+            },
+            "pids": 22
+          },
+          "grafana": {
+            "container_id": "f5c3385eebfde08cd3fd8d1415383b6dbf4d2b756a1a81401a452cd58db51050",
+            "cpu_percent": 0.26,
+            "memory": {
+              "usage_bytes": 121529958.4,
+              "limit_bytes": 125829120.0,
+              "usage_mb": 115.9,
+              "limit_mb": 120.0,
+              "percent": 96.55
+            },
+            "network": {
+              "rx_bytes": 33869004.8,
+              "tx_bytes": 424960.0,
+              "rx_mb": 32.3,
+              "tx_mb": 0.4052734375
+            },
+            "block_io": {
+              "read_bytes": 441450496.0,
+              "write_bytes": 316669952.0,
+              "read_mb": 421.0,
+              "write_mb": 302.0
+            },
+            "pids": 30
+          },
+          "jaeger": {
+            "container_id": "29e93570cda9925d55ce0226a7626f2e24a356c34908faa72ca17cac3925273e",
+            "cpu_percent": 0.06,
+            "memory": {
+              "usage_bytes": 527119155.2,
+              "limit_bytes": 1258425417.728,
+              "usage_mb": 502.7,
+              "limit_mb": 1200.128,
+              "percent": 41.9
+            },
+            "network": {
+              "rx_bytes": 64697139.2,
+              "tx_bytes": 20132659.2,
+              "rx_mb": 61.7,
+              "tx_mb": 19.2
+            },
+            "block_io": {
+              "read_bytes": 2495610.88,
+              "write_bytes": 0.0,
+              "read_mb": 2.38,
+              "write_mb": 0.0
+            },
+            "pids": 17
+          }
+        },
+        "other": {
+          "metrics-collector": {
+            "container_id": "13f55b14485724ce63dd1f3a157c597e13c20c982e78ff29b826a62e6b0607bd",
+            "cpu_percent": 0.0,
+            "memory": {
+              "usage_bytes": 25700597.76,
+              "limit_bytes": 104857600.0,
+              "usage_mb": 24.51,
+              "limit_mb": 100.0,
+              "percent": 24.51
+            },
+            "network": {
+              "rx_bytes": 21181235.2,
+              "tx_bytes": 24222105.6,
+              "rx_mb": 20.2,
+              "tx_mb": 23.1
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.0,
+              "write_mb": 0.0
+            },
+            "pids": 2
+          },
+          "frontend-proxy": {
+            "container_id": "fe57039634d812fed5c9e6de338aa8f89d94ffc5bf71b0ffcc9dc91917c01f67",
+            "cpu_percent": 0.94,
+            "memory": {
+              "usage_bytes": 27829207.04,
+              "limit_bytes": 68157440.0,
+              "usage_mb": 26.54,
+              "limit_mb": 65.0,
+              "percent": 40.83
+            },
+            "network": {
+              "rx_bytes": 205520896.0,
+              "tx_bytes": 392167424.0,
+              "rx_mb": 196.0,
+              "tx_mb": 374.0
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 12595.2,
+              "read_mb": 0.0,
+              "write_mb": 0.01201171875
+            },
+            "pids": 32
+          },
+          "load-generator": {
+            "container_id": "9019609b2e345f924230c05db8003d0f4905caaf4a1810bf1e729bfe36d259bd",
+            "cpu_percent": 103.61,
+            "memory": {
+              "usage_bytes": 645398528.0,
+              "limit_bytes": 1573031772.16,
+              "usage_mb": 615.5,
+              "limit_mb": 1500.16,
+              "percent": 41.03
+            },
+            "network": {
+              "rx_bytes": 337920.0,
+              "tx_bytes": 2359296.0,
+              "rx_mb": 0.322265625,
+              "tx_mb": 2.25
+            },
+            "block_io": {
+              "read_bytes": 4110417.92,
+              "write_bytes": 57252249.6,
+              "read_mb": 3.92,
+              "write_mb": 54.6
+            },
+            "pids": 379
+          },
+          "flagd-ui": {
+            "container_id": "6a413b1680d99b93c1e4b91f1a36c57b1633c33a5a474c2c0eee0ee61c5dcf46",
+            "cpu_percent": 0.14,
+            "memory": {
+              "usage_bytes": 195454566.4,
+              "limit_bytes": 209715200.0,
+              "usage_mb": 186.4,
+              "limit_mb": 200.0,
+              "percent": 93.22
+            },
+            "network": {
+              "rx_bytes": 17715.2,
+              "tx_bytes": 126.0,
+              "rx_mb": 0.01689453125,
+              "tx_mb": 0.0001201629638671875
+            },
+            "block_io": {
+              "read_bytes": 16882073.6,
+              "write_bytes": 780288.0,
+              "read_mb": 16.1,
+              "write_mb": 0.744140625
+            },
+            "pids": 43
+          },
+          "image-provider": {
+            "container_id": "c4e5b8b23eda538d4ade5cdeea73e66c8498946144b0fd790909479748111c79",
+            "cpu_percent": 0.06,
+            "memory": {
+              "usage_bytes": 5582618.624,
+              "limit_bytes": 125829120.0,
+              "usage_mb": 5.324,
+              "limit_mb": 120.0,
+              "percent": 4.44
+            },
+            "network": {
+              "rx_bytes": 235520.0,
+              "tx_bytes": 2065694.72,
+              "rx_mb": 0.224609375,
+              "tx_mb": 1.97
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 1048576.0,
+              "read_mb": 0.0,
+              "write_mb": 1.0
+            },
+            "pids": 19
+          },
+          "quote": {
+            "container_id": "55c4cdd34f4a1ef4912a52fe1ac36cfe16933eeb2e68b1672821a0f5c277000e",
+            "cpu_percent": 0.02,
+            "memory": {
+              "usage_bytes": 16861102.08,
+              "limit_bytes": 41943040.0,
+              "usage_mb": 16.08,
+              "limit_mb": 40.0,
+              "percent": 40.2
+            },
+            "network": {
+              "rx_bytes": 285696.0,
+              "tx_bytes": 1017856.0,
+              "rx_mb": 0.2724609375,
+              "tx_mb": 0.970703125
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.0,
+              "write_mb": 0.0
+            },
+            "pids": 1
+          },
+          "opensearch": {
+            "container_id": "0b03b8e4ab96fed18182bde89ec808c2c45ba39f797c1ad6d6e36ff0edfed9c2",
+            "cpu_percent": 0.96,
+            "memory": {
+              "usage_bytes": 835715072.0,
+              "limit_bytes": 838860800.0,
+              "usage_mb": 797.0,
+              "limit_mb": 800.0,
+              "percent": 99.62
+            },
+            "network": {
+              "rx_bytes": 268435456.0,
+              "tx_bytes": 5452595.2,
+              "rx_mb": 256.0,
+              "tx_mb": 5.2
+            },
+            "block_io": {
+              "read_bytes": 936378368.0,
+              "write_bytes": 1771674009.6,
+              "read_mb": 893.0,
+              "write_mb": 1689.6
+            },
+            "pids": 73
+          },
+          "postgresql": {
+            "container_id": "d9fbfff3f51beac84516e7a4c1f0695acef0c18c799a8a350af6a895e4812123",
+            "cpu_percent": 0.0,
+            "memory": {
+              "usage_bytes": 40475033.6,
+              "limit_bytes": 83886080.0,
+              "usage_mb": 38.6,
+              "limit_mb": 80.0,
+              "percent": 48.25
+            },
+            "network": {
+              "rx_bytes": 3124756.48,
+              "tx_bytes": 2883584.0,
+              "rx_mb": 2.98,
+              "tx_mb": 2.75
+            },
+            "block_io": {
+              "read_bytes": 1782579.2,
+              "write_bytes": 61446553.6,
+              "read_mb": 1.7,
+              "write_mb": 58.6
+            },
+            "pids": 9
+          },
+          "kafka": {
+            "container_id": "e1ce71fc742afaf0757f5a3ed1bbf2879d5d7db13ae31e2a5c4d744573605c33",
+            "cpu_percent": 1.1,
+            "memory": {
+              "usage_bytes": 643196518.4,
+              "limit_bytes": 650117120.0,
+              "usage_mb": 613.4,
+              "limit_mb": 620.0,
+              "percent": 98.94
+            },
+            "network": {
+              "rx_bytes": 3638558.72,
+              "tx_bytes": 5851054.08,
+              "rx_mb": 3.47,
+              "tx_mb": 5.58
+            },
+            "block_io": {
+              "read_bytes": 2086666.24,
+              "write_bytes": 98985574.4,
+              "read_mb": 1.99,
+              "write_mb": 94.4
+            },
+            "pids": 118
+          },
+          "valkey-cart": {
+            "container_id": "bd1f5ca0f84f36bec43cfe454197c581dbe1e3e46b562348dcb0b8e12aec540f",
+            "cpu_percent": 0.27,
+            "memory": {
+              "usage_bytes": 3940548.608,
+              "limit_bytes": 20971520.0,
+              "usage_mb": 3.758,
+              "limit_mb": 20.0,
+              "percent": 18.79
+            },
+            "network": {
+              "rx_bytes": 11114905.6,
+              "tx_bytes": 12687769.6,
+              "rx_mb": 10.6,
+              "tx_mb": 12.1
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 335872.0,
+              "read_mb": 0.0,
+              "write_mb": 0.3203125
+            },
+            "pids": 5
+          },
+          "flagd": {
+            "container_id": "32a213847b05c9b4cc5d40d1ffbc5dccff9204e4f610ab12fea65c28d42588c9",
+            "cpu_percent": 0.05,
+            "memory": {
+              "usage_bytes": 22177382.4,
+              "limit_bytes": 78643200.0,
+              "usage_mb": 21.15,
+              "limit_mb": 75.0,
+              "percent": 28.2
+            },
+            "network": {
+              "rx_bytes": 1111490.56,
+              "tx_bytes": 2778726.4,
+              "rx_mb": 1.06,
+              "tx_mb": 2.65
+            },
+            "block_io": {
+              "read_bytes": 415744.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.396484375,
+              "write_mb": 0.0
+            },
+            "pids": 14
+          }
+        }
+      },
+      "summary": {
+        "total_services": 27,
+        "microservices_count": 12,
+        "infrastructure_count": 4,
+        "total_cpu_percent": 113.87,
+        "total_memory_mb": 4397.266,
+        "total_network_rx_mb": 1477.0091210937499,
+        "total_network_tx_mb": 1523.994963912964
+      }
+    },
+    {
+      "timestamp": "2025-10-13T01:23:04.104953",
+      "elapsed_seconds": 7.675275564193726,
+      "collection_interval": 5,
+      "load_generator": {
+        "available": false
+      },
+      "services": {
+        "microservices": {
+          "frontend": {
+            "container_id": "947a7ef0fe7d9d1019a5f4c6600613bdacb2b7c3d4a3a347ceeef0776e6b4cad",
+            "cpu_percent": 0.43,
+            "memory": {
+              "usage_bytes": 111673344.0,
+              "limit_bytes": 262144000.0,
+              "usage_mb": 106.5,
+              "limit_mb": 250.0,
+              "percent": 42.6
+            },
+            "network": {
+              "rx_bytes": 132120576.0,
+              "tx_bytes": 325058560.0,
+              "rx_mb": 126.0,
+              "tx_mb": 310.0
+            },
+            "block_io": {
+              "read_bytes": 113664.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.1083984375,
+              "write_mb": 0.0
+            },
+            "pids": 11
+          },
+          "checkout": {
+            "container_id": "84f2bff1787933669ef9db5506509eebe46611b20d01e480b97e823995980ab5",
+            "cpu_percent": 0.02,
+            "memory": {
+              "usage_bytes": 13327400.96,
+              "limit_bytes": 20971520.0,
+              "usage_mb": 12.71,
+              "limit_mb": 20.0,
+              "percent": 63.57
+            },
+            "network": {
+              "rx_bytes": 1373634.56,
+              "tx_bytes": 4508876.8,
+              "rx_mb": 1.31,
+              "tx_mb": 4.3
+            },
+            "block_io": {
+              "read_bytes": 1887436.8,
+              "write_bytes": 0.0,
+              "read_mb": 1.8,
+              "write_mb": 0.0
+            },
+            "pids": 14
+          },
+          "recommendation": {
+            "container_id": "bf597d40fc3eca4890033b3242dff1fe7459ff868b071b45788acee5d2c9b95c",
+            "cpu_percent": 0.86,
+            "memory": {
+              "usage_bytes": 47794094.08,
+              "limit_bytes": 524288000.0,
+              "usage_mb": 45.58,
+              "limit_mb": 500.0,
+              "percent": 9.12
+            },
+            "network": {
+              "rx_bytes": 79377203.2,
+              "tx_bytes": 32400998.4,
+              "rx_mb": 75.7,
+              "tx_mb": 30.9
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 4582277.12,
+              "read_mb": 0.0,
+              "write_mb": 4.37
+            },
+            "pids": 34
+          },
+          "product-catalog": {
+            "container_id": "613e9aa6c8b834a6869a60ee6e61fa027bed651ebc2dfd477d5229c02529f762",
+            "cpu_percent": 0.52,
+            "memory": {
+              "usage_bytes": 13484687.36,
+              "limit_bytes": 20971520.0,
+              "usage_mb": 12.86,
+              "limit_mb": 20.0,
+              "percent": 64.28
+            },
+            "network": {
+              "rx_bytes": 30094131.2,
+              "tx_bytes": 206569472.0,
+              "rx_mb": 28.7,
+              "tx_mb": 197.0
+            },
+            "block_io": {
+              "read_bytes": 474112.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.4521484375,
+              "write_mb": 0.0
+            },
+            "pids": 18
+          },
+          "accounting": {
+            "container_id": "0ad03f588faec966784478f2a57fd0e192a9e48c58ff0b80a6467ed64199006d",
+            "cpu_percent": 0.31,
+            "memory": {
+              "usage_bytes": 124990259.2,
+              "limit_bytes": 125829120.0,
+              "usage_mb": 119.2,
+              "limit_mb": 120.0,
+              "percent": 99.31
+            },
+            "network": {
+              "rx_bytes": 2149580.8,
+              "tx_bytes": 3680501.76,
+              "rx_mb": 2.05,
+              "tx_mb": 3.51
+            },
+            "block_io": {
+              "read_bytes": 35441868.8,
+              "write_bytes": 2558525.44,
+              "read_mb": 33.8,
+              "write_mb": 2.44
+            },
+            "pids": 25
+          },
+          "email": {
+            "container_id": "7d3ad71b080788d48e33861c33e211d3b7b240eb5919b9b4bc0d5085a90cfe2b",
+            "cpu_percent": 0.05,
+            "memory": {
+              "usage_bytes": 50772049.92,
+              "limit_bytes": 104857600.0,
+              "usage_mb": 48.42,
+              "limit_mb": 100.0,
+              "percent": 48.42
+            },
+            "network": {
+              "rx_bytes": 381952.0,
+              "tx_bytes": 355328.0,
+              "rx_mb": 0.3642578125,
+              "tx_mb": 0.3388671875
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 16793.6,
+              "read_mb": 0.0,
+              "write_mb": 0.016015625
+            },
+            "pids": 23
+          },
+          "fraud-detection": {
+            "container_id": "38e2d6d81102ec1f774624b624cefdb6503849173b3ca3a5e3be36665a49129b",
+            "cpu_percent": 0.54,
+            "memory": {
+              "usage_bytes": 310797926.4,
+              "limit_bytes": 314572800.0,
+              "usage_mb": 296.4,
+              "limit_mb": 300.0,
+              "percent": 98.79
+            },
+            "network": {
+              "rx_bytes": 1719664.64,
+              "tx_bytes": 3984588.8,
+              "rx_mb": 1.64,
+              "tx_mb": 3.8
+            },
+            "block_io": {
+              "read_bytes": 189792256.0,
+              "write_bytes": 205520896.0,
+              "read_mb": 181.0,
+              "write_mb": 196.0
+            },
+            "pids": 54
+          },
+          "payment": {
+            "container_id": "f05fc6234baed3419f130e33c67e66e71c2d8f959ad27338d36ac2ebc0112f7e",
+            "cpu_percent": 0.85,
+            "memory": {
+              "usage_bytes": 99478405.12,
+              "limit_bytes": 125829120.0,
+              "usage_mb": 94.87,
+              "limit_mb": 120.0,
+              "percent": 79.06
+            },
+            "network": {
+              "rx_bytes": 301056.0,
+              "tx_bytes": 1782579.2,
+              "rx_mb": 0.287109375,
+              "tx_mb": 1.7
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.0,
+              "write_mb": 0.0
+            },
+            "pids": 12
+          },
+          "shipping": {
+            "container_id": "4900261c915a0e16b2aa8143f419052c15a2f6d66e4c2b693df4a2eb067bdc43",
+            "cpu_percent": 0.14,
+            "memory": {
+              "usage_bytes": 6254755.84,
+              "limit_bytes": 20971520.0,
+              "usage_mb": 5.965,
+              "limit_mb": 20.0,
+              "percent": 29.82
+            },
+            "network": {
+              "rx_bytes": 543744.0,
+              "tx_bytes": 1310720.0,
+              "rx_mb": 0.5185546875,
+              "tx_mb": 1.25
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.0,
+              "write_mb": 0.0
+            },
+            "pids": 17
+          },
+          "currency": {
+            "container_id": "9321cad304fa1556d08d7dc0853a15ab41e74025b9a31679ad34acfe6ff5dafe",
+            "cpu_percent": 0.07,
+            "memory": {
+              "usage_bytes": 3543138.304,
+              "limit_bytes": 20971520.0,
+              "usage_mb": 3.379,
+              "limit_mb": 20.0,
+              "percent": 16.89
+            },
+            "network": {
+              "rx_bytes": 541696.0,
+              "tx_bytes": 1174405.12,
+              "rx_mb": 0.5166015625,
+              "tx_mb": 1.12
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.0,
+              "write_mb": 0.0
+            },
+            "pids": 21
+          },
+          "ad": {
+            "container_id": "be20a47dc3cc3481bfc0eae7d3384a4221279a9776aabe7d94cd1a5e88877f32",
+            "cpu_percent": 0.11,
+            "memory": {
+              "usage_bytes": 299368448.0,
+              "limit_bytes": 314572800.0,
+              "usage_mb": 285.5,
+              "limit_mb": 300.0,
+              "percent": 95.17
+            },
+            "network": {
+              "rx_bytes": 290816.0,
+              "tx_bytes": 1677721.6,
+              "rx_mb": 0.27734375,
+              "tx_mb": 1.6
+            },
+            "block_io": {
+              "read_bytes": 158334976.0,
+              "write_bytes": 186646528.0,
+              "read_mb": 151.0,
+              "write_mb": 178.0
+            },
+            "pids": 53
+          },
+          "cart": {
+            "container_id": "6532c7f751ec0dd014da0ce686686306479d637f1a936190825e700a1b285d31",
+            "cpu_percent": 0.07,
+            "memory": {
+              "usage_bytes": 81348526.08,
+              "limit_bytes": 167772160.0,
+              "usage_mb": 77.58,
+              "limit_mb": 160.0,
+              "percent": 48.49
+            },
+            "network": {
+              "rx_bytes": 21495808.0,
+              "tx_bytes": 76965478.4,
+              "rx_mb": 20.5,
+              "tx_mb": 73.4
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.0,
+              "write_mb": 0.0
+            },
+            "pids": 46
+          }
+        },
+        "infrastructure": {
+          "otel-collector": {
+            "container_id": "d065f22d5774d68aa849b0ca51e3612f758cbefebc753e938daad6afeed0f40f",
+            "cpu_percent": 9.38,
+            "memory": {
+              "usage_bytes": 145122918.4,
+              "limit_bytes": 209715200.0,
+              "usage_mb": 138.4,
+              "limit_mb": 200.0,
+              "percent": 69.22
+            },
+            "network": {
+              "rx_bytes": 550502400.0,
+              "tx_bytes": 385875968.0,
+              "rx_mb": 525.0,
+              "tx_mb": 368.0
+            },
+            "block_io": {
+              "read_bytes": 6249512.96,
+              "write_bytes": 0.0,
+              "read_mb": 5.96,
+              "write_mb": 0.0
+            },
+            "pids": 18
+          },
+          "prometheus": {
+            "container_id": "3e72ecf4b0e18f8aecc8e39ca1a682816ef6148e81c754374e4989c2699c9ce4",
+            "cpu_percent": 3.85,
+            "memory": {
+              "usage_bytes": 185807667.2,
+              "limit_bytes": 314572800.0,
+              "usage_mb": 177.2,
+              "limit_mb": 300.0,
+              "percent": 59.08
+            },
+            "network": {
+              "rx_bytes": 114294784.0,
+              "tx_bytes": 80845209.6,
+              "rx_mb": 109.0,
+              "tx_mb": 77.1
+            },
+            "block_io": {
+              "read_bytes": 1709178.88,
+              "write_bytes": 66584576.0,
+              "read_mb": 1.63,
+              "write_mb": 63.5
+            },
+            "pids": 22
+          },
+          "grafana": {
+            "container_id": "f5c3385eebfde08cd3fd8d1415383b6dbf4d2b756a1a81401a452cd58db51050",
+            "cpu_percent": 0.26,
+            "memory": {
+              "usage_bytes": 121739673.6,
+              "limit_bytes": 125829120.0,
+              "usage_mb": 116.1,
+              "limit_mb": 120.0,
+              "percent": 96.78
+            },
+            "network": {
+              "rx_bytes": 33869004.8,
+              "tx_bytes": 424960.0,
+              "rx_mb": 32.3,
+              "tx_mb": 0.4052734375
+            },
+            "block_io": {
+              "read_bytes": 442499072.0,
+              "write_bytes": 316669952.0,
+              "read_mb": 422.0,
+              "write_mb": 302.0
+            },
+            "pids": 30
+          },
+          "jaeger": {
+            "container_id": "29e93570cda9925d55ce0226a7626f2e24a356c34908faa72ca17cac3925273e",
+            "cpu_percent": 0.16,
+            "memory": {
+              "usage_bytes": 527119155.2,
+              "limit_bytes": 1258425417.728,
+              "usage_mb": 502.7,
+              "limit_mb": 1200.128,
+              "percent": 41.9
+            },
+            "network": {
+              "rx_bytes": 64697139.2,
+              "tx_bytes": 20132659.2,
+              "rx_mb": 61.7,
+              "tx_mb": 19.2
+            },
+            "block_io": {
+              "read_bytes": 2495610.88,
+              "write_bytes": 0.0,
+              "read_mb": 2.38,
+              "write_mb": 0.0
+            },
+            "pids": 17
+          }
+        },
+        "other": {
+          "metrics-collector": {
+            "container_id": "13f55b14485724ce63dd1f3a157c597e13c20c982e78ff29b826a62e6b0607bd",
+            "cpu_percent": 0.0,
+            "memory": {
+              "usage_bytes": 25700597.76,
+              "limit_bytes": 104857600.0,
+              "usage_mb": 24.51,
+              "limit_mb": 100.0,
+              "percent": 24.51
+            },
+            "network": {
+              "rx_bytes": 21495808.0,
+              "tx_bytes": 24536678.4,
+              "rx_mb": 20.5,
+              "tx_mb": 23.4
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.0,
+              "write_mb": 0.0
+            },
+            "pids": 2
+          },
+          "frontend-proxy": {
+            "container_id": "fe57039634d812fed5c9e6de338aa8f89d94ffc5bf71b0ffcc9dc91917c01f67",
+            "cpu_percent": 0.62,
+            "memory": {
+              "usage_bytes": 27567063.04,
+              "limit_bytes": 68157440.0,
+              "usage_mb": 26.29,
+              "limit_mb": 65.0,
+              "percent": 40.44
+            },
+            "network": {
+              "rx_bytes": 205520896.0,
+              "tx_bytes": 392167424.0,
+              "rx_mb": 196.0,
+              "tx_mb": 374.0
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 12595.2,
+              "read_mb": 0.0,
+              "write_mb": 0.01201171875
+            },
+            "pids": 32
+          },
+          "load-generator": {
+            "container_id": "9019609b2e345f924230c05db8003d0f4905caaf4a1810bf1e729bfe36d259bd",
+            "cpu_percent": 103.39,
+            "memory": {
+              "usage_bytes": 645083955.2,
+              "limit_bytes": 1573031772.16,
+              "usage_mb": 615.2,
+              "limit_mb": 1500.16,
+              "percent": 41.02
+            },
+            "network": {
+              "rx_bytes": 337920.0,
+              "tx_bytes": 2359296.0,
+              "rx_mb": 0.322265625,
+              "tx_mb": 2.25
+            },
+            "block_io": {
+              "read_bytes": 4110417.92,
+              "write_bytes": 57252249.6,
+              "read_mb": 3.92,
+              "write_mb": 54.6
+            },
+            "pids": 379
+          },
+          "flagd-ui": {
+            "container_id": "6a413b1680d99b93c1e4b91f1a36c57b1633c33a5a474c2c0eee0ee61c5dcf46",
+            "cpu_percent": 0.12,
+            "memory": {
+              "usage_bytes": 195454566.4,
+              "limit_bytes": 209715200.0,
+              "usage_mb": 186.4,
+              "limit_mb": 200.0,
+              "percent": 93.22
+            },
+            "network": {
+              "rx_bytes": 17715.2,
+              "tx_bytes": 126.0,
+              "rx_mb": 0.01689453125,
+              "tx_mb": 0.0001201629638671875
+            },
+            "block_io": {
+              "read_bytes": 16882073.6,
+              "write_bytes": 780288.0,
+              "read_mb": 16.1,
+              "write_mb": 0.744140625
+            },
+            "pids": 43
+          },
+          "image-provider": {
+            "container_id": "c4e5b8b23eda538d4ade5cdeea73e66c8498946144b0fd790909479748111c79",
+            "cpu_percent": 0.05,
+            "memory": {
+              "usage_bytes": 5582618.624,
+              "limit_bytes": 125829120.0,
+              "usage_mb": 5.324,
+              "limit_mb": 120.0,
+              "percent": 4.44
+            },
+            "network": {
+              "rx_bytes": 235520.0,
+              "tx_bytes": 2065694.72,
+              "rx_mb": 0.224609375,
+              "tx_mb": 1.97
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 1048576.0,
+              "read_mb": 0.0,
+              "write_mb": 1.0
+            },
+            "pids": 19
+          },
+          "quote": {
+            "container_id": "55c4cdd34f4a1ef4912a52fe1ac36cfe16933eeb2e68b1672821a0f5c277000e",
+            "cpu_percent": 0.03,
+            "memory": {
+              "usage_bytes": 16861102.08,
+              "limit_bytes": 41943040.0,
+              "usage_mb": 16.08,
+              "limit_mb": 40.0,
+              "percent": 40.2
+            },
+            "network": {
+              "rx_bytes": 285696.0,
+              "tx_bytes": 1017856.0,
+              "rx_mb": 0.2724609375,
+              "tx_mb": 0.970703125
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.0,
+              "write_mb": 0.0
+            },
+            "pids": 1
+          },
+          "opensearch": {
+            "container_id": "0b03b8e4ab96fed18182bde89ec808c2c45ba39f797c1ad6d6e36ff0edfed9c2",
+            "cpu_percent": 0.74,
+            "memory": {
+              "usage_bytes": 835715072.0,
+              "limit_bytes": 838860800.0,
+              "usage_mb": 797.0,
+              "limit_mb": 800.0,
+              "percent": 99.62
+            },
+            "network": {
+              "rx_bytes": 268435456.0,
+              "tx_bytes": 5452595.2,
+              "rx_mb": 256.0,
+              "tx_mb": 5.2
+            },
+            "block_io": {
+              "read_bytes": 936378368.0,
+              "write_bytes": 1771674009.6,
+              "read_mb": 893.0,
+              "write_mb": 1689.6
+            },
+            "pids": 73
+          },
+          "postgresql": {
+            "container_id": "d9fbfff3f51beac84516e7a4c1f0695acef0c18c799a8a350af6a895e4812123",
+            "cpu_percent": 0.0,
+            "memory": {
+              "usage_bytes": 40160460.8,
+              "limit_bytes": 83886080.0,
+              "usage_mb": 38.3,
+              "limit_mb": 80.0,
+              "percent": 47.88
+            },
+            "network": {
+              "rx_bytes": 3124756.48,
+              "tx_bytes": 2883584.0,
+              "rx_mb": 2.98,
+              "tx_mb": 2.75
+            },
+            "block_io": {
+              "read_bytes": 1782579.2,
+              "write_bytes": 61446553.6,
+              "read_mb": 1.7,
+              "write_mb": 58.6
+            },
+            "pids": 9
+          },
+          "kafka": {
+            "container_id": "e1ce71fc742afaf0757f5a3ed1bbf2879d5d7db13ae31e2a5c4d744573605c33",
+            "cpu_percent": 1.42,
+            "memory": {
+              "usage_bytes": 643825664.0,
+              "limit_bytes": 650117120.0,
+              "usage_mb": 614.0,
+              "limit_mb": 620.0,
+              "percent": 99.03
+            },
+            "network": {
+              "rx_bytes": 3638558.72,
+              "tx_bytes": 5861539.84,
+              "rx_mb": 3.47,
+              "tx_mb": 5.59
+            },
+            "block_io": {
+              "read_bytes": 2086666.24,
+              "write_bytes": 98985574.4,
+              "read_mb": 1.99,
+              "write_mb": 94.4
+            },
+            "pids": 118
+          },
+          "valkey-cart": {
+            "container_id": "bd1f5ca0f84f36bec43cfe454197c581dbe1e3e46b562348dcb0b8e12aec540f",
+            "cpu_percent": 0.22,
+            "memory": {
+              "usage_bytes": 4726980.608,
+              "limit_bytes": 20971520.0,
+              "usage_mb": 4.508,
+              "limit_mb": 20.0,
+              "percent": 22.54
+            },
+            "network": {
+              "rx_bytes": 11114905.6,
+              "tx_bytes": 12687769.6,
+              "rx_mb": 10.6,
+              "tx_mb": 12.1
+            },
+            "block_io": {
+              "read_bytes": 0.0,
+              "write_bytes": 335872.0,
+              "read_mb": 0.0,
+              "write_mb": 0.3203125
+            },
+            "pids": 5
+          },
+          "flagd": {
+            "container_id": "32a213847b05c9b4cc5d40d1ffbc5dccff9204e4f610ab12fea65c28d42588c9",
+            "cpu_percent": 0.06,
+            "memory": {
+              "usage_bytes": 22177382.4,
+              "limit_bytes": 78643200.0,
+              "usage_mb": 21.15,
+              "limit_mb": 75.0,
+              "percent": 28.2
+            },
+            "network": {
+              "rx_bytes": 1111490.56,
+              "tx_bytes": 2778726.4,
+              "rx_mb": 1.06,
+              "tx_mb": 2.65
+            },
+            "block_io": {
+              "read_bytes": 415744.0,
+              "write_bytes": 0.0,
+              "read_mb": 0.396484375,
+              "write_mb": 0.0
+            },
+            "pids": 14
+          }
+        }
+      },
+      "summary": {
+        "total_services": 27,
+        "microservices_count": 12,
+        "infrastructure_count": 4,
+        "total_cpu_percent": 124.26999999999998,
+        "total_memory_mb": 4392.125999999999,
+        "total_network_rx_mb": 1477.3100976562498,
+        "total_network_tx_mb": 1524.5049639129638
+      }
+    }
+  ]
+}
