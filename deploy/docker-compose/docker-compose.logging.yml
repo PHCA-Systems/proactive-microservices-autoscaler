@@ -2,10 +2,13 @@ version: '2'
 
 services:
   elasticsearch:
-    image: elasticsearch
+    image: elasticsearch:7.17.0
     hostname: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
   kibana:
-    image: kibana
+    image: kibana:7.17.0
     hostname: kibana
     depends_on:
       - elasticsearch
@@ -18,11 +21,20 @@ services:
       - elasticsearch
     ports:
       - '24224:24224'
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "24224"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   front-end:
     logging:
       driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: "{{.Name}}"
     depends_on:
-      - log-server
+      log-server:
+        condition: service_healthy
   edge-router:
     logging:
       driver: fluentd

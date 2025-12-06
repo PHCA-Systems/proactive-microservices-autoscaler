@@ -18,17 +18,20 @@ services:
           - 9090:9090
         links:
           - alertmanager:alertmanager
-    nodeexporter:
-        image: quay.io/prometheus/node-exporter:v1.1.2
-        container_name: nodeexporter
-        volumes:
-          - '/:/host:ro,rslave'
-        pid: host
-        command:
-          - '--path.rootfs=/host'
-        restart: unless-stopped
-        ports:
-          - 9100:9100
+    # nodeexporter: Commented out for Windows compatibility
+    # Node exporter requires Linux-specific mount features that don't work on Windows
+    # Uncomment this section if running on Linux
+    # nodeexporter:
+    #     image: quay.io/prometheus/node-exporter:v1.1.2
+    #     container_name: nodeexporter
+    #     volumes:
+    #         - '/:/host:ro,rslave'
+    #     pid: host
+    #     command:
+    #         - '--path.rootfs=/host'
+    #     restart: unless-stopped
+    #     ports:
+    #         - 9100:9100
     alertmanager:
         image: prom/alertmanager
         ports:
