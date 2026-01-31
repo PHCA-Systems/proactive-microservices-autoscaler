@@ -3,11 +3,8 @@
 ## Project Overview
 I am implementing a high-academic-integrity reproduction of the stochastic load generation methodology from the EuroSys'24 paper "Erlang: Application-Aware Autoscaling for Cloud Microservices" for the Sock Shop microservices demo. that you can ind inside pubsub proactive microservices autoscaling/ microservice-demo folder
 
-
 you have to understand the sock shop project accurately and the load testing implementation in details very well
-
 my Core Objective is Reproduce the paper's load testing methodology with maximum academic integrity to study microservices autoscaling under realistic stochastic traffic patterns.
-
 
 ```
 
@@ -44,7 +41,7 @@ Total Weight: 117 tasks
 - **Configuration**: 50 users for 10 minutes
 - **Use Case**: Baseline performance measurement
 
-### 2. StepLoad  
+### 2. StepLoad
 - **Purpose**: Sudden traffic variations
 - **Pattern**: 50→200→100→300→50 users at 2,4,6,8 minutes
 - **Use Case**: Autoscaling response to bursts
@@ -60,6 +57,7 @@ Total Weight: 117 tasks
 - **Pattern**: 10→150→10 users over 10 minutes
 - **Phases**: 5min ramp up, 2min peak, 3min ramp down
 - **Use Case**: Organic scaling behavior
+
 ## Usage Commands
 ```bash
 # Four patterns with automatic EuroSys'24 parameters
@@ -70,4 +68,3 @@ python scripts/run_load_test.py --pattern ramp      # Organic growth
 
 # Academic Integrity Statement
 This implementation should strictly adhere to the EuroSys'24 paper methodology . All action weights, timing intervals, and behavioral patterns must be derived from cited academic and industry benchmarks. The stochastic load generation preserves the paper's core contribution: realistic, data-driven microservices load testing for autoscaling research.
-

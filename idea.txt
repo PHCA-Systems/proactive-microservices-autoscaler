@@ -10,7 +10,7 @@ independent hot-swappable scalable service
 can handle traffic spikes without bottlenecking the classifier
 no single point of failure
 
-Idea : 
+Idea :
 Metrics Publishers: Each microservice publishes performance metrics
 Traffic Classifier Service: Subscribes to metrics, publishes scaling decisions (which services are slowing down to be scaled)
 Scaling Controller: Subscribes to scaling events, executes K8s operations
@@ -49,6 +49,7 @@ Multiple classifier services
 
 RESEARCH PAPER VALIDITY - Even with "Bad" Performance
 Absolutely YES! Here's why your project is research-valid regardless:
+
 Contribution Areas (Pick 2-3):
 
 Architectural Contribution:
