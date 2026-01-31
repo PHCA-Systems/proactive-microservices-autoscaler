@@ -1,0 +1,15 @@
+timestamp,experiment_id,service_name,container_name,container_id,cpu_percent_docker,memory_usage_docker,network_io_docker,block_io_docker
+2026-01-30 04:41:15.389440,verification_test,edge-router,docker-compose-edge-router-1,4bc742defb663278d915fb1957925345ec4f4e8de4c3146565fc7f5019fba98f,0.03,7.762MiB / 7.617GiB,142MB / 142MB,13.7MB / 0B
+2026-01-30 04:41:15.389440,verification_test,carts,docker-compose-carts-1,e28c5fd5e70e518d7701365852e436b2ad89bbdc94540ef98d33dd2153fedf84,0.15,367.8MiB / 7.617GiB,6.42MB / 12.8MB,22.1MB / 0B
+2026-01-30 04:41:15.389440,verification_test,catalogue,docker-compose-catalogue-1,d1d02061c7181e2b886b932992d3b1c2fa9c1fb1c9079f108d338967eca0d4cc,0.0,5.727MiB / 7.617GiB,11.4MB / 13.1MB,8.43MB / 0B
+2026-01-30 04:41:15.389440,verification_test,carts-db,docker-compose-carts-db-1,693e2a791fe8bfd57fbab84f321270695f388c4a52837db0c4cc2d51abc3d516,0.36,59.36MiB / 7.617GiB,3.33MB / 4.92MB,41.8MB / 16.7MB
+2026-01-30 04:41:15.389440,verification_test,orders-db,docker-compose-orders-db-1,60f238ae60b68561d40b0b50fa0adc20255dea777ed65882622f0979acd54089,0.35,32.11MiB / 7.617GiB,144kB / 199kB,1.62MB / 10.4MB
+2026-01-30 04:41:15.389440,verification_test,front-end,docker-compose-front-end-1,8a4e75e92fa025996c7f084c99c929b21f978da5901fb87178d2abedf2c4c859,0.0,70.11MiB / 7.617GiB,20.3MB / 142MB,24.3MB / 0B
+2026-01-30 04:41:15.389440,verification_test,user-db,docker-compose-user-db-1,b454beee19dbf788a22c9e1ed6c8953141ae5df2d91c2b2addda7c3a765dd4d1,0.58,35.54MiB / 7.617GiB,142kB / 124kB,36MB / 9.33MB
+2026-01-30 04:41:15.389440,verification_test,orders,docker-compose-orders-1,0e6e1bcdc94b2160da2d2b91a2300df9de862f23bbdcfa3b5b3a10f2ec9cfb21,0.16,365.3MiB / 7.617GiB,843kB / 8.05MB,30.8MB / 0B
+2026-01-30 04:41:15.389440,verification_test,catalogue-db,docker-compose-catalogue-db-1,0f71af32729fca4cd5ca2adb366d9d10c70dfd8e2b0a682f3542821785a7020b,0.11,208.1MiB / 7.617GiB,1.61MB / 9.21MB,39.4MB / 13.2MB
+2026-01-30 04:41:15.389440,verification_test,rabbitmq,docker-compose-rabbitmq-1,595a405f296da91349f7ae04a5b3eb45accee43fda6d22857971e2cd80d47aa5,8.35,111.7MiB / 7.617GiB,39.3kB / 33.2kB,34MB / 119kB
+2026-01-30 04:41:15.389440,verification_test,queue-master,docker-compose-queue-master-1,2e9e442883413d962193c642eb09b0958033405228cd3e71b2cc33d5fea51284,0.11,653.3MiB / 7.617GiB,38.4kB / 34.2kB,20.4MB / 0B
+2026-01-30 04:41:15.389440,verification_test,shipping,docker-compose-shipping-1,46571bdffca7431f5adbf9fd74b1f552c12a791f8d44209cc6227cdc9ac346ff,0.16,351.9MiB / 7.617GiB,647kB / 7.92MB,35.8MB / 0B
+2026-01-30 04:41:15.389440,verification_test,payment,docker-compose-payment-1,59ffe93c73d614c707c5c95944895863197ac03a755955986c0cbe0e638f6fed,0.01,5.316MiB / 7.617GiB,512kB / 1.56MB,7.95MB / 0B
+2026-01-30 04:41:15.389440,verification_test,user,docker-compose-user-1,c5184cc23127201e0c7e8ed840cc9580373ded08ff6c0c0d1fb9b05db584e19f,0.0,5.719MiB / 7.617GiB,632kB / 1.71MB,8.72MB / 0B

@@ -69,5 +69,5 @@ python scripts/run_load_test.py --pattern spike     # Flash crowds
 python scripts/run_load_test.py --pattern ramp      # Organic growth
 
 # Academic Integrity Statement
-This implementation shoul strictly adheres to the EuroSys'24 paper methodology . All action weights, timing intervals, and behavioral patterns are must be derived from cited academic and industry benchmarks. The stochastic load generation preserves the paper's core contribution: realistic, data-driven microservices load testing for autoscaling research.
+This implementation should strictly adhere to the EuroSys'24 paper methodology . All action weights, timing intervals, and behavioral patterns must be derived from cited academic and industry benchmarks. The stochastic load generation preserves the paper's core contribution: realistic, data-driven microservices load testing for autoscaling research.
 
