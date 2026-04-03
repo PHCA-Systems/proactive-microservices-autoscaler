@@ -9,16 +9,16 @@ import random
 import time
 from locust import HttpUser, task, constant, LoadTestShape
 
-# Fixed Sock Shop catalogue data (standard demo items)
+# Fixed Sock Shop catalogue data (valid IDs from running instance)
 item_ids = [
-    "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
-    "3395a43e-5d8d-4d79-ac8c-0d58e637d5e8", 
-    "03fef6c8-7c4f-4f69-8a7d-6e48d4c1db8e",
-    "d3588630-ad8e-49df-b6f8-5e4f3c0e5e2e",
-    "510a0d7e-8e83-4193-b483-e27e9ddc34d8",
-    "808a2de1-1aaa-4c25-a9b9-79a93b77c087",
-    "819e1fbf-a459-4c89-9e03-9b5d1a5fc1b0",
-    "zzz4f044-ec42-4f2b-a2d8-7e4b3f4a5c6d"
+    "03fef6ac-1896-4ce8-bd69-b798f85c6e0b",  # Holy
+    "3395a43e-2d88-40de-b95f-e00e1502085b",  # Colourful
+    "510a0d7e-8e83-4193-b483-e27e09ddc34d",  # SuperSport XL
+    "808a2de1-1aaa-4c25-a9b9-6612e8f29a38",  # Classic
+    "819e1fbf-8b7e-4f6d-811f-693534916a8b",  # Figueroa
+    "837ab141-399e-4c1f-9abc-bace40296bac",  # YouTube.sock
+    "a0a4f044-b040-410d-8ead-4de0446aec7e",  # Weave special
+    "d3588630-ad8e-49df-bbd7-3167f7efb246"   # Nerd leg
 ]
 
 # Standard Sock Shop tags for realistic browsing
@@ -32,13 +32,28 @@ class SockShopUser(HttpUser):
     host = "http://localhost:80"  # Sock Shop edge-router on port 80
     
     def on_start(self):
-        """Initialize session - no login required for Sock Shop demo."""
-        # Create a session ID for cart management
-        self.session_id = f"session_{random.randint(1000, 9999)}"
-        self.cart_items = []  # Track items in cart
+        """
+        Initialize session with Basic Authentication per official Sock Shop demo.
+        Official load test uses: username='user', password='password'
+        EuroSys'24 paper: Login once per user; session/cookies maintain cart state.
+        """
+        import base64
+        
+        # Initialize cart tracking
+        self.cart_items = []
         self.has_items_in_cart = False
         
-        # Note: Sock Shop demo doesn't require authentication for basic operations
+        # Use official Sock Shop demo credentials
+        self.username = "user"
+        self.password = "password"
+        
+        # Create Basic Auth header (official Sock Shop authentication method)
+        credentials = f"{self.username}:{self.password}"
+        base64_credentials = base64.b64encode(credentials.encode()).decode()
+        self.auth_header = {"Authorization": f"Basic {base64_credentials}"}
+        
+        # Login to establish authenticated session
+        self.client.get("/login", headers=self.auth_header, name="login")
     
     # Weighted tasks (total weight = 117)
     @task(25)  # ~21.4% - Home page browsing
@@ -77,14 +92,23 @@ class SockShopUser(HttpUser):
     def view_cart(self):
         self.client.get("/basket.html", name="view_cart")
     
-    @task(4)  # ~3.4% - Checkout
+    @task(4)  # ~3.7% - Checkout (triggers orders->payment->shipping flow)
     def checkout(self):
         """
-        Unconditional checkout attempt following EuroSys'24 methodology.
-        Checkout may fail naturally due to system constraints, not artificial logic.
+        Create order using official Sock Shop method.
+        Per official load test: clear cart, add item, then checkout.
+        This triggers the full microservice chain: orders -> payment -> shipping
+        Maintains EuroSys'24 methodology: 3.7% of actions create orders.
         """
-        # Always attempt checkout - use the customer orders page
-        self.client.get("/customer-orders.html", name="checkout")
+        # Official Sock Shop pattern: clear cart first to avoid payment limit
+        self.client.delete("/cart", name="clear_cart")
+        
+        # Add a single affordable item to cart
+        item_id = random.choice(item_ids)
+        self.client.post("/cart", json={"id": item_id, "quantity": 1}, name="add_for_checkout")
+        
+        # Create order (triggers orders -> payment -> shipping chain)
+        self.client.post("/orders", headers=self.auth_header, name="checkout")
 
 class SpikeLoad(LoadTestShape):
     """
@@ -94,15 +118,21 @@ class SpikeLoad(LoadTestShape):
     
     def __init__(self):
         super().__init__()
+        # Read duration from environment variable or use default
+        import os
+        duration_minutes = int(os.environ.get('LOCUST_RUN_TIME_MINUTES', '10'))
+        self.test_duration = duration_minutes * 60  # Convert to seconds
+        
+        # Scale spikes proportionally to total duration
+        spike_interval = self.test_duration / 7  # Space out 4 spikes
         self.spikes = [
-            (60, 30, 15),     # (spike_time, duration, peak_users)
-            (180, 30, 50),    # Larger spike at 3 minutes
-            (300, 30, 100),   # Major spike at 5 minutes
-            (420, 30, 25),    # Smaller spike at 7 minutes
+            (int(spike_interval * 1), 30, 15),     # First spike at ~14%
+            (int(spike_interval * 3), 30, 50),     # Larger spike at ~43%
+            (int(spike_interval * 5), 30, 100),    # Major spike at ~71%
+            (int(spike_interval * 6.5), 30, 25),   # Smaller spike near end
         ]
         self.base_users = 10
         self.base_spawn_rate = 2
-        self.test_duration = 600
     
     def tick(self):
         run_time = self.get_run_time()
