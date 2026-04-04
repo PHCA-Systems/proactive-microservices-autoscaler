@@ -1,0 +1,158 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # Kafka Infrastructure
+  # ============================================================================
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    hostname: zookeeper
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - ml-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    hostname: kafka
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    networks:
+      - ml-network
+
+  # ============================================================================
+  # Metrics Aggregator Service
+  # ============================================================================
+  metrics-aggregator:
+    build:
+      context: ./services/metrics-aggregator
+      dockerfile: Dockerfile
+    container_name: metrics-aggregator
+    depends_on:
+      - kafka
+    environment:
+      MODE: ${MODE:-production}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      PROMETHEUS_URL: http://prometheus:9090
+      POLL_INTERVAL_SEC: 30
+      OUTPUT_DIR: /output
+    volumes:
+      - ./output:/output
+    networks:
+      - ml-network
+      - docker-compose_default
+    profiles:
+      - production
+      - development
+
+  # ============================================================================
+  # ML Inference Services (Production Only)
+  # ============================================================================
+  ml-xgboost:
+    build:
+      context: ./services/ml-inference
+      dockerfile: Dockerfile
+    container_name: ml-xgboost
+    depends_on:
+      - kafka
+      - metrics-aggregator
+    environment:
+      MODEL_NAME: xgboost
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      MODEL_PATH: /models
+      OUTPUT_DIR: /output
+    volumes:
+      - ./ML-Models/models/xgboost:/models:ro
+      - ./output:/output
+    networks:
+      - ml-network
+    profiles:
+      - production
+
+  ml-random-forest:
+    build:
+      context: ./services/ml-inference
+      dockerfile: Dockerfile
+    container_name: ml-random-forest
+    depends_on:
+      - kafka
+      - metrics-aggregator
+    environment:
+      MODEL_NAME: random_forest
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      MODEL_PATH: /models
+      OUTPUT_DIR: /output
+    volumes:
+      - ./ML-Models/models/random_forest:/models:ro
+      - ./output:/output
+    networks:
+      - ml-network
+    profiles:
+      - production
+
+  ml-logistic-regression:
+    build:
+      context: ./services/ml-inference
+      dockerfile: Dockerfile
+    container_name: ml-logistic-regression
+    depends_on:
+      - kafka
+      - metrics-aggregator
+    environment:
+      MODEL_NAME: logistic_regression
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      MODEL_PATH: /models
+      OUTPUT_DIR: /output
+    volumes:
+      - ./ML-Models/models/logistic_regression:/models:ro
+      - ./output:/output
+    networks:
+      - ml-network
+    profiles:
+      - production
+
+  # ============================================================================
+  # Authoritative Scaling Service (Production Only)
+  # ============================================================================
+  authoritative-scaler:
+    build:
+      context: ./services/authoritative-scaler
+      dockerfile: Dockerfile
+    container_name: authoritative-scaler
+    depends_on:
+      - kafka
+      - ml-xgboost
+      - ml-random-forest
+      - ml-logistic-regression
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      OUTPUT_DIR: /output
+    volumes:
+      - ./output:/output
+    networks:
+      - ml-network
+    profiles:
+      - production
+
+networks:
+  ml-network:
+    driver: bridge
+  docker-compose_default:
+    external: true
