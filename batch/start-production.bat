@@ -14,12 +14,12 @@ cd ..\..\..
 
 echo.
 echo [2/3] Starting Kafka and ML services...
-timeout /T 45 /nobreak >nul
+C:\Windows\System32\timeout.exe /t 45 /nobreak >nul
 docker-compose -f docker-compose.ml.yml --profile production up -d
 
 echo.
 echo [3/3] Waiting for ML services to initialize (45 seconds)...
-timeout /T 45 /nobreak >nul
+C:\Windows\System32\timeout.exe /t 45 /nobreak >nul
 
 echo.
 echo ================================================================================

@@ -14,12 +14,12 @@ cd ..\..\..
 
 echo.
 echo [2/3] Starting Kafka and Metrics Aggregator...
-timeout /T 30 /nobreak >nul
+C:\Windows\System32\timeout.exe /t 30 /nobreak >nul
 docker-compose -f docker-compose.ml.yml --profile development up -d
 
 echo.
 echo [3/3] Waiting for services to initialize (30 seconds)...
-timeout /T 30 /nobreak >nul
+C:\Windows\System32\timeout.exe /t 30 /nobreak >nul
 
 echo.
 echo ================================================================================
