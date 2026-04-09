@@ -13,7 +13,7 @@ class MetricsCollector:
         self.prometheus_url = prometheus_url.rstrip("/")
         self.default_services = [
             "carts", "catalogue", "front-end", "orders",
-            "payment", "queue-master", "shipping", "user"
+            "payment", "shipping", "user"
         ]
 
     def query(self, promql: str) -> List[dict]:
@@ -129,12 +129,8 @@ class MetricsCollector:
             svc = self.get_service_name(r.get("metric", {}))
             mem_by_service[svc] = mem_by_service.get(svc, 0.0) + self.float_value(r) / (1024 ** 2)
 
-        # Assemble per-service dict
-        all_services = (
-            set(rps_by_service) | set(p95_avg) | set(cpu_by_service) | set(mem_by_service)
-        )
-        if not all_services:
-            all_services = set(self.default_services)
+        # Assemble per-service dict — restrict to known Sock Shop services only
+        all_services = set(self.default_services)
 
         metrics: Dict[str, dict] = {}
         for svc in all_services:

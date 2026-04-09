@@ -32,15 +32,11 @@ CSV_COLUMNS = [
 
 
 def setup_csv_writer(output_path: str):
-    """Setup CSV writer for development mode."""
-    file_exists = os.path.isfile(output_path)
-    csv_file = open(output_path, "a", newline="", encoding="utf-8")
+    """Setup CSV writer for development mode. Always overwrites existing file."""
+    csv_file = open(output_path, "w", newline="", encoding="utf-8")
     writer = csv.DictWriter(csv_file, fieldnames=CSV_COLUMNS)
-    
-    if not file_exists:
-        writer.writeheader()
-        csv_file.flush()
-    
+    writer.writeheader()
+    csv_file.flush()
     return csv_file, writer
 
 

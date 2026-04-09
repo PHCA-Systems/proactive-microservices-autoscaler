@@ -1,0 +1,130 @@
+{
+  "constant": {
+    "XGBoost": {
+      "precision_1": 0.2195,
+      "recall_1": 0.9375,
+      "f1_1": 0.3557,
+      "roc_auc": 0.9377,
+      "tn": 765,
+      "fp": 160,
+      "fn": 3,
+      "tp": 45
+    },
+    "RandomForest": {
+      "precision_1": 0.254,
+      "recall_1": 1.0,
+      "f1_1": 0.4051,
+      "roc_auc": 0.9501,
+      "tn": 784,
+      "fp": 141,
+      "fn": 0,
+      "tp": 48
+    },
+    "LogisticRegression": {
+      "precision_1": 0.1523,
+      "recall_1": 0.7708,
+      "f1_1": 0.2543,
+      "roc_auc": 0.8762,
+      "tn": 719,
+      "fp": 206,
+      "fn": 11,
+      "tp": 37
+    }
+  },
+  "ramp": {
+    "XGBoost": {
+      "precision_1": 0.5821,
+      "recall_1": 0.7647,
+      "f1_1": 0.661,
+      "roc_auc": 0.9512,
+      "tn": 570,
+      "fp": 56,
+      "fn": 24,
+      "tp": 78
+    },
+    "RandomForest": {
+      "precision_1": 0.6818,
+      "recall_1": 0.8824,
+      "f1_1": 0.7692,
+      "roc_auc": 0.9716,
+      "tn": 584,
+      "fp": 42,
+      "fn": 12,
+      "tp": 90
+    },
+    "LogisticRegression": {
+      "precision_1": 0.4082,
+      "recall_1": 0.7843,
+      "f1_1": 0.5369,
+      "roc_auc": 0.9095,
+      "tn": 510,
+      "fp": 116,
+      "fn": 22,
+      "tp": 80
+    }
+  },
+  "spike": {
+    "XGBoost": {
+      "precision_1": 0.6627,
+      "recall_1": 0.4955,
+      "f1_1": 0.567,
+      "roc_auc": 0.857,
+      "tn": 575,
+      "fp": 28,
+      "fn": 56,
+      "tp": 55
+    },
+    "RandomForest": {
+      "precision_1": 0.6023,
+      "recall_1": 0.4775,
+      "f1_1": 0.5327,
+      "roc_auc": 0.8969,
+      "tn": 568,
+      "fp": 35,
+      "fn": 58,
+      "tp": 53
+    },
+    "LogisticRegression": {
+      "precision_1": 0.6951,
+      "recall_1": 0.5135,
+      "f1_1": 0.5907,
+      "roc_auc": 0.8857,
+      "tn": 578,
+      "fp": 25,
+      "fn": 54,
+      "tp": 57
+    }
+  },
+  "step": {
+    "XGBoost": {
+      "precision_1": 0.6531,
+      "recall_1": 0.8276,
+      "f1_1": 0.73,
+      "roc_auc": 0.9534,
+      "tn": 533,
+      "fp": 51,
+      "fn": 20,
+      "tp": 96
+    },
+    "RandomForest": {
+      "precision_1": 0.7231,
+      "recall_1": 0.8103,
+      "f1_1": 0.7642,
+      "roc_auc": 0.9549,
+      "tn": 548,
+      "fp": 36,
+      "fn": 22,
+      "tp": 94
+    },
+    "LogisticRegression": {
+      "precision_1": 0.4975,
+      "recall_1": 0.8534,
+      "f1_1": 0.6286,
+      "roc_auc": 0.9399,
+      "tn": 484,
+      "fp": 100,
+      "fn": 17,
+      "tp": 99
+    }
+  }
+}

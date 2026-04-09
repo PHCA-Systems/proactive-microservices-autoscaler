@@ -1,0 +1,41 @@
+{
+  "XGBoost": {
+    "precision_0": 0.9922,
+    "recall_0": 0.9252,
+    "f1_0": 0.9575,
+    "precision_1": 0.6339,
+    "recall_1": 0.9467,
+    "f1_1": 0.7594,
+    "roc_auc": 0.9811,
+    "tn": 507,
+    "fp": 41,
+    "fn": 4,
+    "tp": 71
+  },
+  "RandomForest": {
+    "precision_0": 0.9863,
+    "recall_0": 0.9215,
+    "f1_0": 0.9528,
+    "precision_1": 0.6126,
+    "recall_1": 0.9067,
+    "f1_1": 0.7312,
+    "roc_auc": 0.9747,
+    "tn": 505,
+    "fp": 43,
+    "fn": 7,
+    "tp": 68
+  },
+  "LogisticRegression": {
+    "precision_0": 0.9657,
+    "recall_0": 0.823,
+    "f1_0": 0.8887,
+    "precision_1": 0.3782,
+    "recall_1": 0.7867,
+    "f1_1": 0.5108,
+    "roc_auc": 0.9015,
+    "tn": 451,
+    "fp": 97,
+    "fn": 16,
+    "tp": 59
+  }
+}
