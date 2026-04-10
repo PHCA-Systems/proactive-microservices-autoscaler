@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-aggregator
+  namespace: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metrics-aggregator
+  template:
+    metadata:
+      labels:
+        app: metrics-aggregator
+    spec:
+      containers:
+      - name: aggregator
+        image: gcr.io/grad-phca/metrics-aggregator:latest
+        env:
+        - name: MODE
+          value: "production"
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka:9092"
+        - name: PROMETHEUS_URL
+          value: "http://34.170.213.190:9090"
+        - name: POLL_INTERVAL_SEC
+          value: "30"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi

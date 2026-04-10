@@ -1,0 +1,71 @@
+================================================================================
+4-HOUR MIXED PATTERN TEST - USAGE GUIDE
+================================================================================
+
+COMMAND:
+  python metrics-collection/run_experiment.py --gen4patterns
+
+WHAT IT DOES:
+  Runs 4 hours (240 minutes) of mixed load patterns with varying durations
+  All 4 patterns (ramp, constant, spike, step) are used multiple times
+
+PATTERN SEQUENCE (15 segments):
+  1.  ramp     - 15 min
+  2.  constant - 20 min
+  3.  spike    - 10 min
+  4.  step     - 30 min
+  5.  ramp     - 25 min
+  6.  constant - 15 min
+  7.  spike    -  5 min
+  8.  step     - 20 min
+  9.  ramp     - 10 min
+  10. constant - 30 min
+  11. spike    - 15 min
+  12. step     - 10 min
+  13. ramp     - 20 min
+  14. constant - 10 min
+  15. spike    - 15 min
+  -------------------------
+  TOTAL: 240 minutes (4 hours)
+
+OUTPUT:
+  - CSV: output/csv/mixed_4hour_metrics.csv
+  - Logs: output/logs/locust_mixed_seg1_ramp_stdout.log (etc.)
+  - Collector log: output/logs/collector_mixed_stdout.log
+
+EXPECTED ROWS:
+  240 minutes × 2 polls/min × 7 services = 3,360 rows
+
+OPTIONS:
+  --skip-docker     Skip starting docker-compose (if already running)
+  --prometheus URL  Custom Prometheus URL (default: http://localhost:9090)
+  --host URL        Custom Sock Shop URL (default: http://localhost:80)
+
+EXAMPLES:
+
+  # Full 4-hour test (starts docker-compose)
+  python metrics-collection/run_experiment.py --gen4patterns
+
+  # Stack already running
+  python metrics-collection/run_experiment.py --gen4patterns --skip-docker
+
+  # Custom Prometheus URL
+  python metrics-collection/run_experiment.py --gen4patterns --prometheus http://192.168.1.100:9090
+
+MONITORING:
+  - Grafana: http://localhost:3000 (admin / foobar)
+  - Prometheus: http://localhost:9090
+  - Progress updates every 30 seconds
+
+NOTES:
+  - The --gen4patterns flag overrides --pattern and --duration
+  - Each segment runs sequentially with 5-second gaps
+  - Metrics collector runs for the full 4 hours
+  - Press Ctrl+C to abort (will stop current segment and collector)
+  - SLA threshold is set to 9.86ms (p95 latency)
+
+STOPPING THE STACK:
+  cd microservices-demo/deploy/docker-compose
+  docker compose -f docker-compose.yml -f docker-compose.monitoring.yml down
+
+================================================================================

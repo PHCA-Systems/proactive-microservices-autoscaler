@@ -1,0 +1,15 @@
+{
+  "n_estimators": 200,
+  "max_depth": 8,
+  "class_weight": "balanced",
+  "random_state": 42,
+  "service_mapping": {
+    "catalogue": 0,
+    "carts": 1,
+    "front-end": 2,
+    "orders": 3,
+    "payment": 4,
+    "shipping": 5,
+    "user": 6
+  }
+}

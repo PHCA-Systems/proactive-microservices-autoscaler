@@ -1,0 +1,78 @@
+{
+  "report_generated": "2026-04-03T21:35:28.786286",
+  "dataset_info": {
+    "total_samples": 3500,
+    "train_samples": 4652,
+    "test_samples": 700,
+    "positive_class_percentage": 16.914285714285715,
+    "features": [
+      "service",
+      "request_rate_rps",
+      "error_rate_pct",
+      "p50_latency_ms",
+      "p95_latency_ms",
+      "p99_latency_ms",
+      "cpu_usage_pct",
+      "memory_usage_mb",
+      "delta_rps",
+      "delta_p95_latency_ms",
+      "delta_cpu_usage_pct"
+    ]
+  },
+  "training_info": {
+    "smote_applied": true,
+    "smote_strategy": "50/50 balance",
+    "test_set_untouched": true,
+    "random_state": 42
+  },
+  "model_results": {
+    "XGBoost": {
+      "precision_class_0": 0.9762340036563071,
+      "recall_class_0": 0.9175257731958762,
+      "f1_class_0": 0.9459698848538529,
+      "precision_class_1": 0.6862745098039216,
+      "recall_class_1": 0.8898305084745762,
+      "f1_class_1": 0.7749077490774908,
+      "accuracy": 0.9128571428571428,
+      "roc_auc": 0.9620973848214806,
+      "confusion_matrix": {
+        "true_negatives": 534,
+        "false_positives": 48,
+        "false_negatives": 13,
+        "true_positives": 105
+      }
+    },
+    "Random Forest": {
+      "precision_class_0": 0.9830508474576272,
+      "recall_class_0": 0.8969072164948454,
+      "f1_class_0": 0.9380053908355795,
+      "precision_class_1": 0.6449704142011834,
+      "recall_class_1": 0.923728813559322,
+      "f1_class_1": 0.759581881533101,
+      "accuracy": 0.9014285714285715,
+      "roc_auc": 0.9699312714776632,
+      "confusion_matrix": {
+        "true_negatives": 522,
+        "false_positives": 60,
+        "false_negatives": 9,
+        "true_positives": 109
+      }
+    },
+    "Logistic Regression": {
+      "precision_class_0": 0.9941747572815534,
+      "recall_class_0": 0.8797250859106529,
+      "f1_class_0": 0.9334548769371012,
+      "precision_class_1": 0.6216216216216216,
+      "recall_class_1": 0.9745762711864406,
+      "f1_class_1": 0.759075907590759,
+      "accuracy": 0.8957142857142857,
+      "roc_auc": 0.9464587337643428,
+      "confusion_matrix": {
+        "true_negatives": 512,
+        "false_positives": 70,
+        "false_negatives": 3,
+        "true_positives": 115
+      }
+    }
+  }
+}

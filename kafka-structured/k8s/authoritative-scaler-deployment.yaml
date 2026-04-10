@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authoritative-scaler
+  namespace: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authoritative-scaler
+  template:
+    metadata:
+      labels:
+        app: authoritative-scaler
+    spec:
+      containers:
+      - name: scaler
+        image: gcr.io/grad-phca/authoritative-scaler:latest
+        env:
+        - name: MODE
+          value: "production"
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka:9092"
+        - name: VOTE_TIMEOUT_SEC
+          value: "25"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-inference-lr
+  namespace: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ml-inference-lr
+  template:
+    metadata:
+      labels:
+        app: ml-inference-lr
+    spec:
+      containers:
+      - name: inference
+        image: gcr.io/grad-phca/ml-inference:latest
+        env:
+        - name: MODEL_NAME
+          value: "logistic_regression"
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka:9092"
+        - name: MODEL_PATH
+          value: "/models/lr"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi

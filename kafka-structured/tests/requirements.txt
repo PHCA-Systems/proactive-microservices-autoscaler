@@ -1,0 +1,2 @@
+# Test dependencies for Kafka pipeline integration tests
+kafka-python==2.0.2

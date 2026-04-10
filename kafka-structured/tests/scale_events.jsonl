@@ -1,0 +1,5 @@
+{"timestamp": "2026-04-10T03:22:44.239586", "service": "front-end", "direction": "SCALE_DOWN", "old_replicas": 5, "new_replicas": 4, "reason": "CPU<30.0% and p95<0.7\u00d7SLO for 10 intervals"}
+{"timestamp": "2026-04-10T03:22:44.244733", "service": "front-end", "direction": "SCALE_DOWN", "old_replicas": 5, "new_replicas": 4, "reason": "CPU<30.0% and p95<0.7\u00d7SLO for 10 intervals"}
+{"timestamp": "2026-04-10T03:22:44.246482", "service": "front-end", "direction": "SCALE_DOWN", "old_replicas": 5, "new_replicas": 4, "reason": "CPU<30.0% and p95<0.7\u00d7SLO for 10 intervals"}
+{"timestamp": "2026-04-10T03:22:44.246482", "service": "carts", "direction": "SCALE_DOWN", "old_replicas": 5, "new_replicas": 4, "reason": "CPU<30.0% and p95<0.7\u00d7SLO for 10 intervals"}
+{"timestamp": "2026-04-10T03:22:44.247481", "service": "orders", "direction": "SCALE_DOWN", "old_replicas": 5, "new_replicas": 4, "reason": "CPU<30.0% and p95<0.7\u00d7SLO for 10 intervals"}

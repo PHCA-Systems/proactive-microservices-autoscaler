@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-inference-rf
+  namespace: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ml-inference-rf
+  template:
+    metadata:
+      labels:
+        app: ml-inference-rf
+    spec:
+      containers:
+      - name: inference
+        image: gcr.io/grad-phca/ml-inference:latest
+        env:
+        - name: MODEL_NAME
+          value: "random_forest"
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka:9092"
+        - name: MODEL_PATH
+          value: "/models/rf"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi

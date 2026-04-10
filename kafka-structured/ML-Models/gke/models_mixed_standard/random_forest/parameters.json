@@ -1,0 +1,12 @@
+{
+  "model_type": "RandomForest",
+  "service_mapping": {
+    "catalogue": 0,
+    "carts": 1,
+    "front-end": 2,
+    "orders": 3,
+    "payment": 4,
+    "shipping": 5,
+    "user": 6
+  }
+}
