@@ -7,8 +7,8 @@ Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Configuration:"
 Write-Host "  - Total runs: 34"
-Write-Host "  - Duration: ~8.5 hours"
-Write-Host "  - Cost: ~`$4.60"
+Write-Host "  - Duration: ~7.1 hours"
+Write-Host "  - Cost: ~`$3.83"
 Write-Host ""
 Write-Host "Prerequisites:"
 Write-Host "  ✓ GKE clusters running" -ForegroundColor Green

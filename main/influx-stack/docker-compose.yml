@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # InfluxDB - Time series database
+  influxdb:
+    image: influxdb:2.7
+    container_name: phca_influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=password123
+      - DOCKER_INFLUXDB_INIT_ORG=phca
+      - DOCKER_INFLUXDB_INIT_BUCKET=microservices
+      - DOCKER_INFLUXDB_INIT_RETENTION=30d
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=phca-token-12345
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+  # Telegraf - Metrics collector
+  telegraf:
+    image: telegraf:1.29
+    container_name: phca_telegraf
+    privileged: true
+    user: root
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - //var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped
+    networks:
+      - monitoring
+      - docker-compose_default
+    depends_on:
+      - influxdb
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+
+  # Grafana - Visualization (works better with InfluxDB)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: phca_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    restart: unless-stopped
+    networks:
+      - monitoring
+    depends_on:
+      - influxdb
+
+volumes:
+  influxdb_data:
+  grafana_data:
+
+networks:
+  monitoring:
+    driver: bridge
+  docker-compose_default:
+    external: true
+    name: docker-compose_default

@@ -8,11 +8,10 @@ import os
 import json
 import logging
 import time
+import subprocess
 from datetime import datetime, timedelta
 from kafka import KafkaConsumer
 from kafka.errors import KafkaError
-from kubernetes import client, config
-from kubernetes.client.rest import ApiException
 
 logging.basicConfig(
     level=logging.INFO,
@@ -32,6 +31,7 @@ MAX_REPLICAS = int(os.getenv("MAX_REPLICAS", "10"))
 SCALEDOWN_CPU_PCT = float(os.getenv("SCALEDOWN_CPU_PCT", "30.0"))
 SCALEDOWN_LAT_RATIO = float(os.getenv("SCALEDOWN_LAT_RATIO", "0.7"))
 SCALEDOWN_WINDOW = int(os.getenv("SCALEDOWN_WINDOW", "10"))
+KUBECTL_CONTEXT = os.getenv("KUBECTL_CONTEXT", "gke_grad-phca_us-central1-a_sock-shop-cluster")
 
 MONITORED_SERVICES = [
     "front-end", "carts", "orders", "catalogue",
@@ -43,40 +43,64 @@ last_scale_event = {}
 recent_metrics = {s: [] for s in MONITORED_SERVICES}
 
 
-def init_k8s():
-    """Initialize Kubernetes client."""
+def run_kubectl(args: list) -> tuple[bool, str]:
+    """
+    Run kubectl command and return (success, output).
+    Uses KUBECONFIG env var if set, otherwise uses default kubeconfig.
+    """
+    cmd = ["kubectl"]
+    
+    # Add context if specified
+    if KUBECTL_CONTEXT:
+        cmd.extend(["--context", KUBECTL_CONTEXT])
+    
+    cmd.extend(args)
+    
     try:
-        config.load_incluster_config()
-        log.info("Loaded in-cluster K8s config")
-    except Exception:
-        config.load_kube_config()
-        log.info("Loaded local kubeconfig")
-    return client.AppsV1Api()
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            env=os.environ.copy()
+        )
+        return result.returncode == 0, result.stdout + result.stderr
+    except subprocess.TimeoutExpired:
+        log.error(f"kubectl command timed out: {' '.join(cmd)}")
+        return False, "Timeout"
+    except Exception as e:
+        log.error(f"kubectl command failed: {e}")
+        return False, str(e)
 
 
-def get_current_replicas(apps_v1, service: str) -> int:
-    """Get current replica count for a service."""
-    try:
-        dep = apps_v1.read_namespaced_deployment(name=service, namespace=NAMESPACE)
-        return dep.spec.replicas or 1
-    except ApiException as e:
-        log.error(f"Failed to get replicas for {service}: {e}")
+def get_current_replicas(service: str) -> int:
+    """Get current replica count for a service using kubectl."""
+    success, output = run_kubectl([
+        "get", "deployment", service,
+        "-n", NAMESPACE,
+        "-o", "jsonpath={.spec.replicas}"
+    ])
+    
+    if success and output.strip().isdigit():
+        return int(output.strip())
+    else:
+        log.error(f"Failed to get replicas for {service}: {output}")
         return 1
 
 
-def set_replicas(apps_v1, service: str, target: int) -> bool:
-    """Set replica count for a service."""
-    try:
-        body = {"spec": {"replicas": target}}
-        apps_v1.patch_namespaced_deployment_scale(
-            name=service,
-            namespace=NAMESPACE,
-            body=body
-        )
+def set_replicas(service: str, target: int) -> bool:
+    """Set replica count for a service using kubectl."""
+    success, output = run_kubectl([
+        "scale", "deployment", service,
+        "-n", NAMESPACE,
+        f"--replicas={target}"
+    ])
+    
+    if success:
         log.info(f"[SCALE] {service} → {target} replicas")
         return True
-    except ApiException as e:
-        log.error(f"Failed to scale {service} to {target}: {e}")
+    else:
+        log.error(f"Failed to scale {service} to {target}: {output}")
         return False
 
 
@@ -140,27 +164,27 @@ def select_bottleneck_service() -> str | None:
     return best_service
 
 
-def handle_scale_up(apps_v1, service: str):
+def handle_scale_up(service: str):
     """Handle scale-up decision."""
     if not can_scale(service):
         log.info(f"SCALE_UP for {service} skipped - in cooldown")
         return
 
-    current = get_current_replicas(apps_v1, service)
+    current = get_current_replicas(service)
     target = min(current + 1, MAX_REPLICAS)
 
     if target == current:
         log.info(f"{service} already at MAX_REPLICAS ({MAX_REPLICAS}), skipping")
         return
 
-    success = set_replicas(apps_v1, service, target)
+    success = set_replicas(service, target)
     if success:
         record_scale_event(service)
         log_scale_event(service, "SCALE_UP", current, target,
                        reason="ML ensemble consensus")
 
 
-def check_scaledown(apps_v1):
+def check_scaledown():
     """
     Check if any service should be scaled down.
     Scales down by 1 replica if ALL conditions hold for SCALEDOWN_WINDOW intervals:
@@ -187,12 +211,12 @@ def check_scaledown(apps_v1):
         if not (cpu_ok and lat_ok):
             continue
 
-        current = get_current_replicas(apps_v1, service)
+        current = get_current_replicas(service)
         if current <= MIN_REPLICAS:
             continue
 
         target = current - 1
-        success = set_replicas(apps_v1, service, target)
+        success = set_replicas(service, target)
         if success:
             record_scale_event(service)
             log_scale_event(service, "SCALE_DOWN", current, target,
@@ -224,7 +248,16 @@ def ingest_metric(msg_value: dict):
 
 def run():
     """Main controller loop."""
-    apps_v1 = init_k8s()
+    log.info("Initializing scaling controller with kubectl subprocess approach...")
+    log.info(f"Target cluster context: {KUBECTL_CONTEXT}")
+    log.info(f"Target namespace: {NAMESPACE}")
+    
+    # Test kubectl connectivity
+    success, output = run_kubectl(["cluster-info"])
+    if success:
+        log.info("✓ kubectl connectivity verified")
+    else:
+        log.warning(f"kubectl connectivity test failed: {output}")
     
     # Connect to Kafka
     log.info(f"Connecting to Kafka at {KAFKA_BOOTSTRAP}...")
@@ -247,7 +280,7 @@ def run():
         while True:
             # Run scale-down check every 30 seconds
             if datetime.now() - last_scaledown_check >= timedelta(seconds=30):
-                check_scaledown(apps_v1)
+                check_scaledown()
                 last_scaledown_check = datetime.now()
 
             # Poll for messages
@@ -272,7 +305,7 @@ def run():
                             bottleneck = select_bottleneck_service()
                             if bottleneck:
                                 log.info(f"[BOTTLENECK] Selected {bottleneck} for scale-up")
-                                handle_scale_up(apps_v1, bottleneck)
+                                handle_scale_up(bottleneck)
                             else:
                                 log.warning("[BOTTLENECK] No service available for scale-up (all in cooldown)")
 

@@ -1,0 +1,6 @@
+{"timestamp": "2026-04-10T03:14:51.504424", "service": "carts", "direction": "SCALE_UP", "old_replicas": 3, "new_replicas": 4, "reason": "ML ensemble consensus"}
+{"timestamp": "2026-04-10T03:21:16.959812", "service": "front-end", "direction": "SCALE_DOWN", "old_replicas": 5, "new_replicas": 4, "reason": "CPU<30.0% and p95<0.7\u00d7SLO for 10 intervals"}
+{"timestamp": "2026-04-10T03:21:16.983823", "service": "front-end", "direction": "SCALE_DOWN", "old_replicas": 5, "new_replicas": 4, "reason": "CPU<30.0% and p95<0.7\u00d7SLO for 10 intervals"}
+{"timestamp": "2026-04-10T03:21:16.989592", "service": "front-end", "direction": "SCALE_DOWN", "old_replicas": 5, "new_replicas": 4, "reason": "CPU<30.0% and p95<0.7\u00d7SLO for 10 intervals"}
+{"timestamp": "2026-04-10T03:21:16.991590", "service": "carts", "direction": "SCALE_DOWN", "old_replicas": 5, "new_replicas": 4, "reason": "CPU<30.0% and p95<0.7\u00d7SLO for 10 intervals"}
+{"timestamp": "2026-04-10T03:21:16.992994", "service": "orders", "direction": "SCALE_DOWN", "old_replicas": 5, "new_replicas": 4, "reason": "CPU<30.0% and p95<0.7\u00d7SLO for 10 intervals"}

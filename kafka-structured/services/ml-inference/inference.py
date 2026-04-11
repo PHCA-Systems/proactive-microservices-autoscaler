@@ -16,6 +16,7 @@ class InferenceEngine:
     def preprocess_features(self, feature_vector: dict) -> pd.DataFrame:
         """
         Preprocess feature vector for inference.
+        Models are trained with ONE-HOT ENCODED service feature.
         
         Args:
             feature_vector: Feature vector from Kafka
@@ -23,10 +24,11 @@ class InferenceEngine:
         Returns:
             pd.DataFrame: Preprocessed features ready for prediction
         """
-        # Extract features
+        # Extract features and service name
         features = feature_vector.get("features", {})
+        service_name = feature_vector.get("service", "unknown")
         
-        # Build dataframe WITHOUT service feature (models trained without it)
+        # Build base features
         data = {
             "request_rate_rps": features.get("request_rate_rps", 0.0),
             "error_rate_pct": features.get("error_rate_pct", 0.0),
@@ -39,6 +41,15 @@ class InferenceEngine:
             "delta_p95_latency_ms": features.get("delta_p95_latency_ms", 0.0),
             "delta_cpu_usage_pct": features.get("delta_cpu_usage_pct", 0.0),
         }
+        
+        # Add one-hot encoded service features
+        # Models were trained with service_0, service_1, etc.
+        # Map service name to integer using service_mapping
+        service_id = self.service_mapping.get(service_name, -1)
+        
+        # Create one-hot encoded features (service_0 through service_6)
+        for i in range(7):
+            data[f"service_{i}"] = 1 if i == service_id else 0
         
         df = pd.DataFrame([data])
         

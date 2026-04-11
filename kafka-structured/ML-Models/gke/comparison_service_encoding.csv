@@ -1,0 +1,10 @@
+Strategy,Model,Accuracy,Precision,Recall,F1-Score,ROC-AUC,TP,FP,TN,FN
+Mixed Standard (service as int),XGBoost,0.8754,0.5183,0.8947,0.6564,0.9805,85,79,540,10
+Mixed Standard (service as int),RandomForest,0.9468,0.728,0.9579,0.8273,0.9917,91,34,585,4
+Mixed Standard (service as int),LogisticRegression,0.9286,0.6618,0.9474,0.7792,0.9819,90,46,573,5
+Mixed One-Hot (service encoded),XGBoost,0.8754,0.5185,0.8842,0.6537,0.9804,84,78,541,11
+Mixed One-Hot (service encoded),RandomForest,0.9524,0.7521,0.9579,0.8426,0.9925,91,30,589,4
+Mixed One-Hot (service encoded),LogisticRegression,0.9314,0.6597,1.0,0.795,0.9954,95,49,570,0
+No Service Feature,XGBoost,0.8824,0.535,0.8842,0.6667,0.9801,84,73,546,11
+No Service Feature,RandomForest,0.9482,0.75,0.9158,0.8246,0.9906,87,29,590,8
+No Service Feature,LogisticRegression,0.9734,0.9872,0.8105,0.8902,0.9667,77,1,618,18

@@ -22,7 +22,7 @@ spec:
         - name: KAFKA_BOOTSTRAP_SERVERS
           value: "kafka:9092"
         - name: MODEL_PATH
-          value: "/models/rf"
+          value: "/models/models_mixed_onehot_rf"
         resources:
           requests:
             cpu: 200m

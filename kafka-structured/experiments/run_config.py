@@ -29,8 +29,8 @@ REPETITIONS = {
 }
 
 # Total: (2+5+5+5) × 2 conditions = 34 runs
-# Duration per run: 12 min load + 3 min settle = 15 min
-# Total experiment time: 34 × 15 = ~8.5 hours
+# Duration per run: 10 min load + 2 min settle = 12 min
+# Total experiment time: 34 × 12.5 = ~7.1 hours
 
 def generate_run_schedule() -> list[ExperimentRun]:
     """

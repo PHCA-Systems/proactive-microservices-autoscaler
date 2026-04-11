@@ -39,6 +39,8 @@ spec:
           value: "10"
         - name: KUBECONFIG
           value: "/kubeconfig/config"
+        - name: KUBECTL_CONTEXT
+          value: "sock-shop-cluster"
         volumeMounts:
         - name: logs
           mountPath: /logs

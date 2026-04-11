@@ -66,63 +66,63 @@ services:
   # ============================================================================
   # ML Inference Services (Production Only)
   # ============================================================================
-  ml-xgboost:
+  ml-svm:
     build:
       context: ./services/ml-inference
       dockerfile: Dockerfile
-    container_name: ml-xgboost
+    container_name: ml-svm
     depends_on:
       - kafka
       - metrics-aggregator
     environment:
-      MODEL_NAME: xgboost
+      MODEL_NAME: svm
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       MODEL_PATH: /models
       OUTPUT_DIR: /output
     volumes:
-      - ./ML-Models/models/xgboost:/models:ro
+      - ./ML-Models/models/svm:/models:ro
       - ./output:/output
     networks:
       - ml-network
     profiles:
       - production
 
-  ml-random-forest:
+  ml-random-forest-onehot:
     build:
       context: ./services/ml-inference
       dockerfile: Dockerfile
-    container_name: ml-random-forest
+    container_name: ml-random-forest-onehot
     depends_on:
       - kafka
       - metrics-aggregator
     environment:
-      MODEL_NAME: random_forest
+      MODEL_NAME: random_forest_onehot
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       MODEL_PATH: /models
       OUTPUT_DIR: /output
     volumes:
-      - ./ML-Models/models/random_forest:/models:ro
+      - ./ML-Models/models/random_forest_onehot:/models:ro
       - ./output:/output
     networks:
       - ml-network
     profiles:
       - production
 
-  ml-logistic-regression:
+  ml-logistic-regression-onehot:
     build:
       context: ./services/ml-inference
       dockerfile: Dockerfile
-    container_name: ml-logistic-regression
+    container_name: ml-logistic-regression-onehot
     depends_on:
       - kafka
       - metrics-aggregator
     environment:
-      MODEL_NAME: logistic_regression
+      MODEL_NAME: logistic_regression_onehot
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       MODEL_PATH: /models
       OUTPUT_DIR: /output
     volumes:
-      - ./ML-Models/models/logistic_regression:/models:ro
+      - ./ML-Models/models/logistic_regression_onehot:/models:ro
       - ./output:/output
     networks:
       - ml-network
@@ -139,9 +139,9 @@ services:
     container_name: authoritative-scaler
     depends_on:
       - kafka
-      - ml-xgboost
-      - ml-random-forest
-      - ml-logistic-regression
+      - ml-svm
+      - ml-random-forest-onehot
+      - ml-logistic-regression-onehot
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       OUTPUT_DIR: /output

@@ -18,11 +18,11 @@ spec:
         image: gcr.io/grad-phca/ml-inference:latest
         env:
         - name: MODEL_NAME
-          value: "xgboost"
+          value: "svm"
         - name: KAFKA_BOOTSTRAP_SERVERS
           value: "kafka:9092"
         - name: MODEL_PATH
-          value: "/models/xgb"
+          value: "/models/models_additional"
         resources:
           requests:
             cpu: 200m

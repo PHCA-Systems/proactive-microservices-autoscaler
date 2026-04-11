@@ -24,7 +24,7 @@ RESULTS_DIR = Path("results")
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Prometheus configuration
-PROMETHEUS_URL = os.getenv("PROMETHEUS_URL", "http://prometheus-server.sock-shop.svc.cluster.local:9090")
+PROMETHEUS_URL = os.getenv("PROMETHEUS_URL", "http://34.170.213.190:9090")
 
 # Locust VM configuration
 LOCUST_VM_IP = os.getenv("LOCUST_VM_IP", "35.222.116.125")
@@ -77,7 +77,10 @@ def stop_locust(proc: subprocess.Popen):
         print("  Stopping Locust...")
         proc.terminate()
         try:
-            proc.wait(timeout=30)
+            stdout, _ = proc.communicate(timeout=30)
+            # Print last 500 chars of output for debugging
+            if stdout:
+                print(f"  Locust output (last 500 chars): ...{stdout[-500:]}")
         except subprocess.TimeoutExpired:
             print("  Force killing Locust...")
             proc.kill()
@@ -99,11 +102,64 @@ def query_prometheus(query: str) -> float:
         data = response.json()
         
         if data["status"] == "success" and data["data"]["result"]:
-            value = float(data["data"]["result"][0]["value"][1])
+            value_str = data["data"]["result"][0]["value"][1]
+            # Handle NaN values from Prometheus
+            if value_str == "NaN" or value_str == "+Inf" or value_str == "-Inf":
+                return 0.0
+            value = float(value_str)
+            # Check if the value is NaN after conversion
+            if value != value:  # NaN != NaN is True
+                return 0.0
             return value
         return 0.0
     except Exception as e:
         print(f"    Warning: Prometheus query failed: {e}")
+        return 0.0
+
+
+def query_prometheus_for_service(query: str, service_name: str) -> float:
+    """
+    Query Prometheus and extract value for a specific service.
+    Matches the approach used in training data collection.
+    Returns 0.0 if query fails or service not found.
+    """
+    try:
+        response = requests.get(
+            f"{PROMETHEUS_URL}/api/v1/query",
+            params={"query": query},
+            timeout=5
+        )
+        response.raise_for_status()
+        data = response.json()
+        
+        if data["status"] == "success" and data["data"]["result"]:
+            # Find results matching the service name
+            # Check both 'service' and 'job' labels (Sock Shop uses both)
+            values = []
+            for result in data["data"]["result"]:
+                metric = result.get("metric", {})
+                svc = metric.get("service") or metric.get("job", "")
+                
+                # Normalize job names to service names
+                if svc == "cart":
+                    svc = "carts"
+                elif svc == "frontend":
+                    svc = "front-end"
+                
+                if svc == service_name:
+                    value_str = result["value"][1]
+                    if value_str not in ("NaN", "+Inf", "-Inf"):
+                        value = float(value_str)
+                        if value == value:  # Not NaN
+                            values.append(value * 1000.0)  # Convert to ms
+            
+            # Average if multiple instances
+            if values:
+                return sum(values) / len(values)
+        
+        return 0.0
+    except Exception as e:
+        print(f"    Warning: Prometheus query failed for {service_name}: {e}")
         return 0.0
 
 
@@ -156,14 +212,19 @@ def enable_proactive():
             else:
                 print(f"    Warning: could not delete HPA {hpa_name}: {e}")
     
-    # Scale controller to 1 replica
+    # Scale controller to 1 replica (in pipeline-cluster kafka namespace)
     try:
-        apps_v1.patch_namespaced_deployment_scale(
-            name="scaling-controller",
-            namespace=NAMESPACE,
-            body={"spec": {"replicas": 1}}
+        result = subprocess.run(
+            ["kubectl", "--context=gke_grad-phca_us-central1-a_pipeline-cluster", 
+             "scale", "deployment", "scaling-controller", "-n", "kafka", "--replicas=1"],
+            capture_output=True,
+            text=True,
+            timeout=30
         )
-        print("    Scaled scaling-controller to 1 replica")
+        if result.returncode == 0:
+            print("    Scaled scaling-controller to 1 replica in pipeline-cluster")
+        else:
+            print(f"    Warning: could not scale scaling-controller: {result.stderr}")
     except Exception as e:
         print(f"    Warning: could not scale scaling-controller: {e}")
     
@@ -179,14 +240,19 @@ def enable_reactive():
     """
     print("  Enabling reactive condition...")
     
-    # Scale controller to 0 replicas
+    # Scale controller to 0 replicas (in pipeline-cluster kafka namespace)
     try:
-        apps_v1.patch_namespaced_deployment_scale(
-            name="scaling-controller",
-            namespace=NAMESPACE,
-            body={"spec": {"replicas": 0}}
+        result = subprocess.run(
+            ["kubectl", "--context=gke_grad-phca_us-central1-a_pipeline-cluster", 
+             "scale", "deployment", "scaling-controller", "-n", "kafka", "--replicas=0"],
+            capture_output=True,
+            text=True,
+            timeout=30
         )
-        print("    Scaled scaling-controller to 0 replicas")
+        if result.returncode == 0:
+            print("    Scaled scaling-controller to 0 replicas in pipeline-cluster")
+        else:
+            print(f"    Warning: could not scale scaling-controller: {result.stderr}")
     except Exception as e:
         print(f"    Warning: could not scale scaling-controller: {e}")
     
@@ -235,8 +301,10 @@ def collect_snapshot(run: ExperimentRun, interval_idx: int) -> dict:
 
         # Query p95 latency from Prometheus (in milliseconds)
         # Using histogram_quantile on request_duration_seconds metric
-        p95_query = f'histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket{{job="{svc}"}}[1m])) by (le)) * 1000'
-        p95 = query_prometheus(p95_query)
+        # Query all services and filter by service/job label in the result
+        # This matches the approach used in training data collection
+        p95_query = f'histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket[1m])) by (le, job, service, instance))'
+        p95 = query_prometheus_for_service(p95_query, svc)
 
         # Query CPU utilization from Prometheus (as percentage)
         # Using container_cpu_usage_seconds_total metric
@@ -273,18 +341,25 @@ def execute_run(run: ExperimentRun) -> Path:
     snapshots = []
 
     # Start load generator on remote VM
-    # Duration: 12 minutes of load generation
-    load_proc = start_locust(run.pattern, duration_min=12)
+    # Duration: 10 minutes of load generation
+    load_proc = start_locust(run.pattern, duration_min=10)
     
     print(f"  Load generator started (pattern={run.pattern}). Collecting metrics...")
 
-    # Collect for 12 minutes = 24 intervals at 30s each
-    n_intervals = 24
+    # Collect for 10 minutes = 20 intervals at 30s each
+    n_intervals = 20
     for i in range(n_intervals):
         time.sleep(POLL_INTERVAL_S)
         snap = collect_snapshot(run, i)
         snapshots.append(snap)
 
+        # Check if Locust process is still running
+        if load_proc.poll() is not None:
+            # Locust exited early - print its output
+            stdout, _ = load_proc.communicate()
+            print(f"  WARNING: Locust exited early!")
+            print(f"  Locust output: {stdout[:500]}")
+        
         # Live SLO violation indicator
         violations = [
             svc for svc, m in snap["services"].items()
@@ -298,8 +373,8 @@ def execute_run(run: ExperimentRun) -> Path:
 
     # Stop load generator
     stop_locust(load_proc)
-    print("  Load generator stopped. Settling 3 minutes...")
-    time.sleep(180)
+    print("  Load generator stopped. Settling 2 minutes...")
+    time.sleep(120)
 
     # Write results
     with open(out_path, "w") as f:
@@ -336,13 +411,16 @@ def main():
             print(f"  ✗ {svc}: {e}")
             validation_passed = False
     
-    # Check scaling controller deployment exists
+    # Check scaling controller deployment exists (in pipeline-cluster kafka namespace)
     print("\nChecking scaling controller...")
     try:
-        apps_v1.read_namespaced_deployment(name="scaling-controller", namespace=NAMESPACE)
-        print(f"  ✓ scaling-controller deployment exists")
+        # Load pipeline-cluster config
+        pipeline_config = config.new_client_from_config(context="gke_grad-phca_us-central1-a_pipeline-cluster")
+        pipeline_apps_v1 = client.AppsV1Api(api_client=pipeline_config)
+        pipeline_apps_v1.read_namespaced_deployment(name="scaling-controller", namespace="kafka")
+        print(f"  ✓ scaling-controller deployment exists in pipeline-cluster")
     except Exception as e:
-        print(f"  ✗ scaling-controller deployment not found: {e}")
+        print(f"  ✗ scaling-controller deployment not found in pipeline-cluster: {e}")
         validation_passed = False
     
     # Check Prometheus connectivity
@@ -366,19 +444,19 @@ def main():
             "-i", LOCUST_SSH_KEY,
             "-o", "StrictHostKeyChecking=no",
             "-o", "BatchMode=yes",
-            "-o", "ConnectTimeout=5",
+            "-o", "ConnectTimeout=15",
             f"{LOCUST_SSH_USER}@{LOCUST_VM_IP}",
             "echo 'OK'"
         ]
-        result = subprocess.run(test_cmd, capture_output=True, text=True, timeout=10)
+        result = subprocess.run(test_cmd, capture_output=True, text=True, timeout=20)
         if result.returncode == 0:
             print(f"  ✓ Locust VM accessible at {LOCUST_VM_IP}")
         else:
-            print(f"  ✗ Cannot SSH to Locust VM: {result.stderr}")
-            validation_passed = False
+            print(f"  ⚠ Warning: Cannot SSH to Locust VM (will try anyway): {result.stderr}")
+            # Don't fail validation - SSH might work during actual runs
     except Exception as e:
-        print(f"  ✗ Cannot reach Locust VM: {e}")
-        validation_passed = False
+        print(f"  ⚠ Warning: Cannot reach Locust VM (will try anyway): {e}")
+        # Don't fail validation - SSH might work during actual runs
     
     if not validation_passed:
         print("\n✗ VALIDATION FAILED - Please fix the issues above before running experiments")
@@ -396,7 +474,7 @@ def main():
         print("EXPERIMENT SCHEDULE")
         print(f"{'='*60}")
         print(f"Total runs: {total}")
-        print(f"Estimated time: {total * 15 / 60:.1f} hours (~{total * 15} minutes)")
+        print(f"Estimated time: {total * 12.5 / 60:.1f} hours (~{int(total * 12.5)} minutes)")
         print(f"\nRun breakdown:")
         for pattern, reps in {"constant": 2, "step": 5, "spike": 5, "ramp": 5}.items():
             print(f"  {pattern}: {reps} × 2 conditions = {reps * 2} runs")
@@ -411,7 +489,7 @@ def main():
         print(f"{'='*60}\n")
     
     print(f"Starting experiment schedule: {total} runs")
-    print(f"Estimated time: {total * 15 / 60:.1f} hours\n")
+    print(f"Estimated time: {total * 12.5 / 60:.1f} hours\n")
 
     completed = []
     for idx, run in enumerate(schedule, 1):

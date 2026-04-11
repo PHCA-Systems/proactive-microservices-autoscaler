@@ -1,0 +1,13 @@
+{
+    "service_mapping": {
+        "catalogue": 0,
+        "carts": 1,
+        "front-end": 2,
+        "orders": 3,
+        "payment": 4,
+        "shipping": 5,
+        "user": 6
+    },
+    "encoding": "onehot",
+    "note": "Random Forest model trained with one-hot encoded service features"
+}

@@ -340,7 +340,7 @@ The plan follows 8 phases: verification of existing components, integration of M
     - Confirm to start experiments
     - _Requirements: 18.1, 18.2_
   
-  - [ ] 14.2 Monitor experiment execution
+  - [x] 14.2 Monitor experiment execution
     - Check logs periodically for errors
     - Verify JSONL files are being created
     - Verify no services are crashing
