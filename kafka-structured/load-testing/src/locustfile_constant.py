@@ -140,16 +140,17 @@ class ConstantLoad(LoadTestShape):
         super().__init__()
         # Read duration from environment variable or use default
         import os
-        duration_minutes = int(os.environ.get('LOCUST_RUN_TIME_MINUTES', '10'))
+        duration_minutes = int(os.environ.get('LOCUST_RUN_TIME_MINUTES', '20'))
         self.test_duration = duration_minutes * 60  # Convert to seconds
         
-        self.user_count = 50  # Target constant user count
-        self.spawn_rate = 5   # Users spawned per second
+        self.user_count = 150  # Target constant user count (peak load)
+        self.spawn_rate = 10   # Users spawned per second
     
     def tick(self):
         run_time = self.get_run_time()
         
         if run_time < self.test_duration:
+            # Constant 150 users for full duration
             return (self.user_count, self.spawn_rate)
         else:
             return None

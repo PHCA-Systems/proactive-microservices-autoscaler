@@ -22,10 +22,10 @@ class ExperimentRun:
 
 # Repetitions per pattern per condition
 REPETITIONS = {
-    "constant": 2,
-    "step":     5,
-    "spike":    5,
-    "ramp":     5,
+    "constant": 1,  # Just 1 for convergence test
+    "step":     0,
+    "spike":    0,
+    "ramp":     0,
 }
 
 # Total: (2+5+5+5) × 2 conditions = 34 runs

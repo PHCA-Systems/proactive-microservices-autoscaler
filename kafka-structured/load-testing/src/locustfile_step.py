@@ -28,7 +28,7 @@ class SockShopUser(HttpUser):
     """Stochastic user behavior implementation following EuroSys'24 paper methodology."""
     
     wait_time = constant(2)  # Exact paper: action every ~2 seconds
-    timeout = 2  # Exact paper: 2s client timeout (mimics user bouncing)
+    timeout = 5  # 5s timeout for step pattern (allows for pod startup during traffic bursts)
     host = "http://localhost:80"  # Sock Shop edge-router on port 80
     
     def on_start(self):
@@ -123,14 +123,18 @@ class StepLoad(LoadTestShape):
         duration_minutes = int(os.environ.get('LOCUST_RUN_TIME_MINUTES', '10'))
         self.test_duration = duration_minutes * 60  # Convert to seconds
         
-        # Scale steps proportionally to total duration
-        step_interval = self.test_duration / 5  # 5 steps
+        # Add 1-minute warm-up period, then scale steps proportionally
+        warmup_duration = 60  # 1 minute warm-up
+        main_duration = self.test_duration - warmup_duration
+        step_interval = main_duration / 5  # 5 steps after warm-up
+        
         self.steps = [
-            (0, 100, 10),                              # Start
-            (int(step_interval * 1), 200, 20),         # Step up at 20%
-            (int(step_interval * 2), 100, 10),         # Step down at 40%
-            (int(step_interval * 3), 300, 30),         # Step up to peak at 60%
-            (int(step_interval * 4), 50, 5),           # Step down at 80%
+            (0, 10, 5),                                           # Warm-up: 10 users for 1 min
+            (warmup_duration, 100, 10),                           # Step 1: ramp to 100
+            (warmup_duration + int(step_interval * 1), 200, 20),  # Step 2: ramp to 200
+            (warmup_duration + int(step_interval * 2), 100, 10),  # Step 3: drop to 100
+            (warmup_duration + int(step_interval * 3), 300, 30),  # Step 4: ramp to 300
+            (warmup_duration + int(step_interval * 4), 50, 5),    # Step 5: drop to 50
         ]
     
     def tick(self):

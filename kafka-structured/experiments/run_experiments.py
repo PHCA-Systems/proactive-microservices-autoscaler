@@ -341,13 +341,13 @@ def execute_run(run: ExperimentRun) -> Path:
     snapshots = []
 
     # Start load generator on remote VM
-    # Duration: 10 minutes of load generation
-    load_proc = start_locust(run.pattern, duration_min=10)
+    # Duration: 6 minutes for quick test
+    load_proc = start_locust(run.pattern, duration_min=6)
     
     print(f"  Load generator started (pattern={run.pattern}). Collecting metrics...")
 
-    # Collect for 10 minutes = 20 intervals at 30s each
-    n_intervals = 20
+    # Collect for 5 minutes = 10 intervals at 30s each
+    n_intervals = 10
     for i in range(n_intervals):
         time.sleep(POLL_INTERVAL_S)
         snap = collect_snapshot(run, i)
@@ -406,9 +406,9 @@ def main():
     for svc in MONITORED_SERVICES:
         try:
             apps_v1.read_namespaced_deployment(name=svc, namespace=NAMESPACE)
-            print(f"  ✓ {svc}")
+            print(f"  OK {svc}")
         except Exception as e:
-            print(f"  ✗ {svc}: {e}")
+            print(f"  FAIL {svc}: {e}")
             validation_passed = False
     
     # Check scaling controller deployment exists (in pipeline-cluster kafka namespace)
@@ -418,7 +418,7 @@ def main():
         pipeline_config = config.new_client_from_config(context="gke_grad-phca_us-central1-a_pipeline-cluster")
         pipeline_apps_v1 = client.AppsV1Api(api_client=pipeline_config)
         pipeline_apps_v1.read_namespaced_deployment(name="scaling-controller", namespace="kafka")
-        print(f"  ✓ scaling-controller deployment exists in pipeline-cluster")
+        print(f"  OK scaling-controller deployment exists in pipeline-cluster")
     except Exception as e:
         print(f"  ✗ scaling-controller deployment not found in pipeline-cluster: {e}")
         validation_passed = False
@@ -428,12 +428,12 @@ def main():
     try:
         response = requests.get(f"{PROMETHEUS_URL}/api/v1/query", params={"query": "up"}, timeout=5)
         if response.status_code == 200:
-            print(f"  ✓ Prometheus accessible at {PROMETHEUS_URL}")
+            print(f"  OK Prometheus accessible at {PROMETHEUS_URL}")
         else:
-            print(f"  ✗ Prometheus returned status {response.status_code}")
+            print(f"  FAIL Prometheus returned status {response.status_code}")
             validation_passed = False
     except Exception as e:
-        print(f"  ✗ Cannot reach Prometheus: {e}")
+        print(f"  FAIL Cannot reach Prometheus: {e}")
         validation_passed = False
     
     # Check Locust VM connectivity
@@ -450,19 +450,19 @@ def main():
         ]
         result = subprocess.run(test_cmd, capture_output=True, text=True, timeout=20)
         if result.returncode == 0:
-            print(f"  ✓ Locust VM accessible at {LOCUST_VM_IP}")
+            print(f"  OK Locust VM accessible at {LOCUST_VM_IP}")
         else:
-            print(f"  ⚠ Warning: Cannot SSH to Locust VM (will try anyway): {result.stderr}")
+            print(f"  WARNING: Cannot SSH to Locust VM (will try anyway): {result.stderr}")
             # Don't fail validation - SSH might work during actual runs
     except Exception as e:
-        print(f"  ⚠ Warning: Cannot reach Locust VM (will try anyway): {e}")
+        print(f"  WARNING: Cannot reach Locust VM (will try anyway): {e}")
         # Don't fail validation - SSH might work during actual runs
     
     if not validation_passed:
-        print("\n✗ VALIDATION FAILED - Please fix the issues above before running experiments")
+        print("\nFAIL VALIDATION FAILED - Please fix the issues above before running experiments")
         return 1
     
-    print("\n✓ ALL VALIDATION CHECKS PASSED")
+    print("\nOK ALL VALIDATION CHECKS PASSED")
     
     # Generate schedule
     schedule = generate_run_schedule()

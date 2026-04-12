@@ -69,6 +69,22 @@ class InferenceEngine:
         Returns:
             tuple: (prediction, probability, confidence)
         """
+        # RULE-BASED GATE: Don't scale if RPS is below threshold
+        # This prevents models from predicting SCALE_UP when there's no traffic
+        features = feature_vector.get("features", {})
+        rps = features.get("request_rate_rps", 0.0)
+        service_name = feature_vector.get("service", "unknown")
+        
+        RPS_THRESHOLD = 1.0  # Minimum RPS to consider scaling
+        
+        # LOG RPS VALUES FOR DEBUGGING
+        print(f"[RPS CHECK] {service_name}: RPS={rps:.2f}, threshold={RPS_THRESHOLD}")
+        
+        if rps < RPS_THRESHOLD:
+            # No traffic, return NO_OP (0) with high confidence
+            print(f"[RPS GATE BLOCKED] {service_name}: RPS {rps:.2f} < {RPS_THRESHOLD}, returning NO_OP")
+            return 0, 1.0, 1.0
+        
         # Preprocess
         X = self.preprocess_features(feature_vector)
         
@@ -81,5 +97,9 @@ class InferenceEngine:
         
         # Confidence is the max probability
         confidence = float(max(probabilities))
+        
+        # LOG PREDICTION RESULTS
+        action = "SCALE_UP" if prediction == 1 else "NO_OP"
+        print(f"[PREDICTION] {service_name}: {action} (confidence={confidence:.2%}, RPS={rps:.2f})")
         
         return prediction, probability, confidence
