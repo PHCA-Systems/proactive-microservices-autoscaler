@@ -347,7 +347,7 @@ def execute_run(run: ExperimentRun, run_idx: int = 0, total_runs: int = 0) -> Pa
     snapshots = []
 
     # Start load generator on remote VM
-    LOAD_DURATION_MIN = 6
+    LOAD_DURATION_MIN = 10
     n_intervals = LOAD_DURATION_MIN * 2
     load_proc = start_locust(run.pattern, duration_min=LOAD_DURATION_MIN)
     
