@@ -27,7 +27,7 @@ python -u run_experiments.py 2>&1 | Tee-Object -FilePath "experiment_run_log.txt
 
 **No `--pause-before-start` flag.** The script launches immediately after validation.
 
-**Estimated runtime:** ~5.7 hours (34 runs x ~10 min each)
+**Estimated runtime:** ~7 hours (34 runs x ~12 min each)
 
 ---
 
@@ -78,7 +78,7 @@ cd d:\Projects\Grad\PHCA\kafka-structured\experiments
 python -u run_experiments.py 2>&1 | Tee-Object -FilePath "experiment_run_log.txt"
 ```
 
-This will take approximately 5-6 hours. The script:
+This will take approximately 7 hours. The script:
 - Validates infrastructure (Prometheus, Locust VM, Kubernetes)
 - Auto-starts immediately (no pause/input needed)
 - Runs 34 experiments: 4 load patterns x 2 conditions (proactive vs reactive) x multiple reps
@@ -111,7 +111,7 @@ This produces per-pattern comparison tables, global summary, Mann-Whitney U stat
 **STEP 4: Create a results summary document**
 
 Create `d:\Projects\Grad\PHCA\EXPERIMENT_RESULTS_SUMMARY.md` containing:
-1. Test configuration (34 runs, 4 patterns, 7 services, SLO=35.68ms, 6min per run, 30s intervals)
+1. Test configuration (34 runs, 4 patterns, 7 services, SLO=35.68ms, 12min per run, 30s intervals)
 2. The full comparison tables from analysis output 
 3. Global metrics (violation rates, latency, resource usage, p-values)
 4. Per-pattern breakdown with winners
