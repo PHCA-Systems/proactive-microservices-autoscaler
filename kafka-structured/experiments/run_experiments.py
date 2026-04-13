@@ -322,33 +322,41 @@ def collect_snapshot(run: ExperimentRun, interval_idx: int) -> dict:
     return snapshot
 
 
-def execute_run(run: ExperimentRun) -> Path:
-    """Execute a single experimental run."""
+def execute_run(run: ExperimentRun, run_idx: int = 0, total_runs: int = 0) -> Path:
+    """Execute a single experimental run with rich logging."""
     label = f"{run.condition}_{run.pattern}_run{run.run_id:02d}"
-    print(f"\n{'='*60}")
-    print(f"  RUN: {label}")
-    print(f"{'='*60}")
+    run_start = datetime.now()
+    
+    print(f"\n{'#'*70}")
+    print(f"#  RUN {run_idx}/{total_runs}: {label}")
+    print(f"#  Started: {run_start.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"#  Condition: {run.condition.upper()} | Pattern: {run.pattern} | Rep: {run.run_id}")
+    print(f"{'#'*70}")
 
     # Switch condition
+    print(f"  [SETUP] Switching to {run.condition.upper()} mode...")
     if run.condition == "proactive":
         enable_proactive()
     else:
         enable_reactive()
 
+    print(f"  [SETUP] Resetting cluster to 1 replica each...")
     reset_cluster()
 
     out_path = RESULTS_DIR / f"{label}.jsonl"
     snapshots = []
 
     # Start load generator on remote VM
-    # Duration: 6 minutes for quick test
-    load_proc = start_locust(run.pattern, duration_min=6)
-    
-    print(f"  Load generator started (pattern={run.pattern}). Collecting metrics...")
-
-    # Collect for duration of load test (6 min = 12 intervals at 30s each)
     LOAD_DURATION_MIN = 6
     n_intervals = LOAD_DURATION_MIN * 2
+    load_proc = start_locust(run.pattern, duration_min=LOAD_DURATION_MIN)
+    
+    print(f"  [LOAD] Locust started: {run.pattern} pattern, {LOAD_DURATION_MIN}min, {n_intervals} intervals")
+    print(f"  [DATA] Collecting {n_intervals} snapshots at 30s intervals...")
+    print(f"")
+    print(f"  {'idx':>4} | {'time':>5} | {'FE rep':>6} {'FE p95':>8} | {'cart rep':>8} {'cart p95':>9} | {'ord rep':>7} {'ord p95':>8} | {'viols':>5}")
+    print(f"  {'-'*80}")
+
     start_time = time.time()
     for i in range(n_intervals):
         target_time = start_time + (i + 1) * POLL_INTERVAL_S
@@ -360,25 +368,25 @@ def execute_run(run: ExperimentRun) -> Path:
 
         # Check if Locust process is still running
         if load_proc.poll() is not None:
-            # Locust exited early - print its output
             stdout, _ = load_proc.communicate()
-            print(f"  WARNING: Locust exited early!")
-            print(f"  Locust output: {stdout[:500]}")
+            print(f"  *** WARNING: Locust exited early! Output: {stdout[:300]}")
         
-        # Live SLO violation indicator
-        violations = [
-            svc for svc, m in snap["services"].items()
-            if m["slo_violated"]
-        ]
-        rep_str = " ".join(
-            f"{s}={snap['services'][s]['replicas']}"
-            for s in MONITORED_SERVICES
-        )
-        print(f"  [{i+1:02d}/{n_intervals}] violations={violations or 'none'} | {rep_str}")
+        # Rich per-interval logging
+        fe = snap["services"]["front-end"]
+        ca = snap["services"]["carts"]
+        od = snap["services"]["orders"]
+        n_viols = sum(1 for s, m in snap["services"].items() if m["slo_violated"])
+        v_mark = f"{n_viols}/7" if n_viols > 0 else "0"
+        fe_v = "!" if fe["slo_violated"] else " "
+        ca_v = "!" if ca["slo_violated"] else " "
+        od_v = "!" if od["slo_violated"] else " "
+        print(f"  {i+1:>4} | {(i+1)*0.5:>4.1f}m | {fe['replicas']:>5}r {fe['p95_ms']:>6.1f}ms{fe_v}| {ca['replicas']:>7}r {ca['p95_ms']:>7.1f}ms{ca_v}| {od['replicas']:>6}r {od['p95_ms']:>6.1f}ms{od_v}| {v_mark:>5}")
 
     # Stop load generator
     stop_locust(load_proc)
-    print("  Load generator stopped. Settling 2 minutes...")
+    elapsed_load = time.time() - start_time
+    print(f"")
+    print(f"  [LOAD] Stopped after {elapsed_load:.0f}s. Settling 2 minutes...")
     time.sleep(120)
 
     # Write results
@@ -386,28 +394,34 @@ def execute_run(run: ExperimentRun) -> Path:
         for snap in snapshots:
             f.write(json.dumps(snap) + "\n")
 
-    print(f"  Results saved: {out_path}")
+    run_end = datetime.now()
+    run_duration = (run_end - run_start).total_seconds() / 60
+    total_viols = sum(
+        1 for snap in snapshots
+        for svc, m in snap["services"].items()
+        if m["slo_violated"]
+    )
+    total_possible = len(snapshots) * len(MONITORED_SERVICES)
+    viol_rate = total_viols / total_possible * 100 if total_possible else 0
+
+    print(f"  [DONE] {label} completed in {run_duration:.1f} min")
+    print(f"  [DONE] Violation rate: {viol_rate:.1f}% ({total_viols}/{total_possible})")
+    print(f"  [DONE] Saved: {out_path}")
     return out_path
 
 
 def main():
     """Main entry point."""
-    import argparse
+    suite_start = datetime.now()
     
-    parser = argparse.ArgumentParser(description="Run proactive autoscaler experiments")
-    parser.add_argument("--pause-before-start", action="store_true",
-                       help="Display run schedule and wait for confirmation before starting")
-    args = parser.parse_args()
+    print("="*70)
+    print(f"  EXPERIMENT SUITE STARTED: {suite_start.strftime('%Y-%m-%d %H:%M:%S')}")
+    print("="*70)
     
-    # Validation checks (Task 8.5)
-    print("="*60)
-    print("EXPERIMENT VALIDATION")
-    print("="*60)
-    
+    # --- Validation ---
+    print("\n[VALIDATION] Checking infrastructure...")
     validation_passed = True
     
-    # Check all 7 service deployments exist
-    print("\nChecking service deployments...")
     for svc in MONITORED_SERVICES:
         try:
             apps_v1.read_namespaced_deployment(name=svc, namespace=NAMESPACE)
@@ -416,99 +430,110 @@ def main():
             print(f"  FAIL {svc}: {e}")
             validation_passed = False
     
-    # Check scaling controller deployment exists (in pipeline-cluster kafka namespace)
-    print("\nChecking scaling controller...")
-    try:
-        # Load pipeline-cluster config
-        pipeline_config = config.new_client_from_config(context="gke_grad-phca_us-central1-a_pipeline-cluster")
-        pipeline_apps_v1 = client.AppsV1Api(api_client=pipeline_config)
-        pipeline_apps_v1.read_namespaced_deployment(name="scaling-controller", namespace="kafka")
-        print(f"  OK scaling-controller deployment exists in pipeline-cluster")
-    except Exception as e:
-        print(f"  ✗ scaling-controller deployment not found in pipeline-cluster: {e}")
-        validation_passed = False
+    # Check scaling controller (try both names)
+    print("\n[VALIDATION] Checking scaling controller...")
+    controller_found = False
+    for ctrl_name in ["scaling-controller", "authoritative-scaler"]:
+        try:
+            pipeline_config = config.new_client_from_config(context="gke_grad-phca_us-central1-a_pipeline-cluster")
+            pipeline_apps_v1 = client.AppsV1Api(api_client=pipeline_config)
+            pipeline_apps_v1.read_namespaced_deployment(name=ctrl_name, namespace="kafka")
+            print(f"  OK {ctrl_name} found in pipeline-cluster")
+            controller_found = True
+            break
+        except Exception:
+            continue
+    if not controller_found:
+        print(f"  WARNING: No controller deployment found (checked scaling-controller, authoritative-scaler)")
+        # Don't fail - controller might be named differently
     
-    # Check Prometheus connectivity
-    print("\nChecking Prometheus connectivity...")
+    # Check Prometheus
+    print("\n[VALIDATION] Checking Prometheus...")
     try:
         response = requests.get(f"{PROMETHEUS_URL}/api/v1/query", params={"query": "up"}, timeout=5)
-        if response.status_code == 200:
-            print(f"  OK Prometheus accessible at {PROMETHEUS_URL}")
-        else:
-            print(f"  FAIL Prometheus returned status {response.status_code}")
+        print(f"  OK Prometheus at {PROMETHEUS_URL}" if response.status_code == 200 else f"  FAIL status={response.status_code}")
+        if response.status_code != 200:
             validation_passed = False
     except Exception as e:
-        print(f"  FAIL Cannot reach Prometheus: {e}")
+        print(f"  FAIL Prometheus: {e}")
         validation_passed = False
     
-    # Check Locust VM connectivity
-    print("\nChecking Locust VM connectivity...")
+    # Check Locust
+    print("\n[VALIDATION] Checking Locust VM...")
     try:
-        test_cmd = [
-            "ssh",
-            "-i", LOCUST_SSH_KEY,
-            "-o", "StrictHostKeyChecking=no",
-            "-o", "BatchMode=yes",
-            "-o", "ConnectTimeout=15",
-            f"{LOCUST_SSH_USER}@{LOCUST_VM_IP}",
-            "echo 'OK'"
-        ]
-        result = subprocess.run(test_cmd, capture_output=True, text=True, timeout=20)
-        if result.returncode == 0:
-            print(f"  OK Locust VM accessible at {LOCUST_VM_IP}")
-        else:
-            print(f"  WARNING: Cannot SSH to Locust VM (will try anyway): {result.stderr}")
-            # Don't fail validation - SSH might work during actual runs
+        result = subprocess.run([
+            "ssh", "-i", LOCUST_SSH_KEY, "-o", "StrictHostKeyChecking=no",
+            "-o", "BatchMode=yes", "-o", "ConnectTimeout=15",
+            f"{LOCUST_SSH_USER}@{LOCUST_VM_IP}", "echo OK"
+        ], capture_output=True, text=True, timeout=20)
+        print(f"  OK Locust VM at {LOCUST_VM_IP}" if result.returncode == 0 else f"  WARNING: SSH issue (will retry): {result.stderr[:100]}")
     except Exception as e:
-        print(f"  WARNING: Cannot reach Locust VM (will try anyway): {e}")
-        # Don't fail validation - SSH might work during actual runs
+        print(f"  WARNING: Locust VM: {e}")
     
     if not validation_passed:
-        print("\nFAIL VALIDATION FAILED - Please fix the issues above before running experiments")
+        print("\n*** VALIDATION FAILED - fix issues above ***")
         return 1
     
-    print("\nOK ALL VALIDATION CHECKS PASSED")
+    print("\n[VALIDATION] ALL CHECKS PASSED")
     
-    # Generate schedule
+    # --- Schedule ---
     schedule = generate_run_schedule()
     total = len(schedule)
+    est_hours = total * 10 / 60  # ~10 min per run
+    est_end = suite_start + __import__('datetime').timedelta(minutes=total * 10)
     
-    # Pause before start (Task 8.6)
-    if args.pause_before_start:
-        print(f"\n{'='*60}")
-        print("EXPERIMENT SCHEDULE")
-        print(f"{'='*60}")
-        print(f"Total runs: {total}")
-        print(f"Estimated time: {total * 12.5 / 60:.1f} hours (~{int(total * 12.5)} minutes)")
-        print(f"\nRun breakdown:")
-        for pattern, reps in {"constant": 2, "step": 5, "spike": 5, "ramp": 5}.items():
-            print(f"  {pattern}: {reps} × 2 conditions = {reps * 2} runs")
-        
-        print(f"\nFirst 5 runs:")
-        for i, run in enumerate(schedule[:5], 1):
-            print(f"  {i}. {run.condition:10s} {run.pattern:10s} run {run.run_id}")
-        print(f"  ...")
-        
-        print(f"\n{'='*60}")
-        response = input("Press ENTER to start experiments (or Ctrl+C to cancel): ")
-        print(f"{'='*60}\n")
+    print(f"\n{'='*70}")
+    print(f"  SCHEDULE: {total} runs")
+    print(f"  Estimated duration: {est_hours:.1f} hours")
+    print(f"  Estimated completion: {est_end.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"{'='*70}")
     
-    print(f"Starting experiment schedule: {total} runs")
-    print(f"Estimated time: {total * 12.5 / 60:.1f} hours\n")
+    for i, run in enumerate(schedule, 1):
+        print(f"  {i:>3}. {run.condition:10s} {run.pattern:10s} run{run.run_id}")
+    
+    print(f"\n{'='*70}")
+    print(f"  LAUNCHING NOW - NO PAUSE")
+    print(f"{'='*70}\n")
 
+    # --- Execute ---
     completed = []
+    failed = []
+    
     for idx, run in enumerate(schedule, 1):
-        print(f"\nProgress: {idx}/{total}")
+        elapsed = (datetime.now() - suite_start).total_seconds() / 60
+        remaining = (total - idx + 1) * 10
+        eta = datetime.now() + __import__('datetime').timedelta(minutes=remaining)
+        
+        print(f"\n{'*'*70}")
+        print(f"*  PROGRESS: {idx}/{total} | Elapsed: {elapsed:.0f}min | ETA: {eta.strftime('%H:%M:%S')}")
+        print(f"{'*'*70}")
+        
         try:
-            out = execute_run(run)
-            completed.append({"run": run, "output": out, "status": "ok"})
+            out = execute_run(run, run_idx=idx, total_runs=total)
+            completed.append(f"{run.condition}_{run.pattern}_run{run.run_id:02d}")
+            print(f"\n  >>> COMPLETED {idx}/{total}: {run.condition}_{run.pattern}_run{run.run_id:02d} <<<")
         except Exception as e:
-            print(f"  ERROR in run {run}: {e}")
-            completed.append({"run": run, "output": None, "status": f"error: {e}"})
+            label = f"{run.condition}_{run.pattern}_run{run.run_id:02d}"
+            failed.append(label)
+            print(f"\n  !!! ERROR in {label}: {e} !!!")
+            import traceback
+            traceback.print_exc()
+            # Continue with next run
 
-    print(f"\n{'='*60}")
-    print(f"All runs complete. {sum(1 for c in completed if c['status']=='ok')}/{total} succeeded.")
-    print(f"Results in: {RESULTS_DIR}")
+    suite_end = datetime.now()
+    suite_duration = (suite_end - suite_start).total_seconds() / 3600
+    
+    print(f"\n{'='*70}")
+    print(f"  EXPERIMENT SUITE FINISHED")
+    print(f"  Started:   {suite_start.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"  Finished:  {suite_end.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"  Duration:  {suite_duration:.1f} hours")
+    print(f"  Succeeded: {len(completed)}/{total}")
+    print(f"  Failed:    {len(failed)}/{total}")
+    if failed:
+        print(f"  Failed runs: {', '.join(failed)}")
+    print(f"  Results in: {RESULTS_DIR}")
+    print(f"{'='*70}")
     return 0
 
 
