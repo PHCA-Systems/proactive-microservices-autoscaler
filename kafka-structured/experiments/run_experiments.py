@@ -346,10 +346,15 @@ def execute_run(run: ExperimentRun) -> Path:
     
     print(f"  Load generator started (pattern={run.pattern}). Collecting metrics...")
 
-    # Collect for 5 minutes = 10 intervals at 30s each
-    n_intervals = 10
+    # Collect for duration of load test (6 min = 12 intervals at 30s each)
+    LOAD_DURATION_MIN = 6
+    n_intervals = LOAD_DURATION_MIN * 2
+    start_time = time.time()
     for i in range(n_intervals):
-        time.sleep(POLL_INTERVAL_S)
+        target_time = start_time + (i + 1) * POLL_INTERVAL_S
+        sleep_duration = target_time - time.time()
+        if sleep_duration > 0:
+            time.sleep(sleep_duration)
         snap = collect_snapshot(run, i)
         snapshots.append(snap)
 

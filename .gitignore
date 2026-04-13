@@ -28,3 +28,11 @@ overnight_log.txt
 
 # Temp
 _tmp_*.py
+mock_academic_analysis.py
+analyze_constant_test.py
+analyze_db_bottleneck.py
+analyze_run999.py
+run_custom_test.py
+
+# Old investigation logs (archived)
+old_AI_analysis_logs/

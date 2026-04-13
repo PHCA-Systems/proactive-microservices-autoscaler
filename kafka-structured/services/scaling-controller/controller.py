@@ -25,7 +25,7 @@ KAFKA_BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:29092")
 DECISIONS_TOPIC = os.getenv("DECISIONS_TOPIC", "scaling-decisions")
 METRICS_TOPIC = os.getenv("METRICS_TOPIC", "metrics")
 SLO_THRESHOLD_MS = float(os.getenv("SLO_THRESHOLD_MS", "36.0"))
-COOLDOWN_MINUTES = int(os.getenv("COOLDOWN_MINUTES", "5"))
+COOLDOWN_MINUTES = int(os.getenv("COOLDOWN_MINUTES", "1"))
 MIN_REPLICAS = int(os.getenv("MIN_REPLICAS", "1"))
 MAX_REPLICAS = int(os.getenv("MAX_REPLICAS", "10"))
 SCALEDOWN_CPU_PCT = float(os.getenv("SCALEDOWN_CPU_PCT", "30.0"))
@@ -134,13 +134,13 @@ def log_scale_event(service: str, direction: str, old: int, new: int, reason: st
         f.write(json.dumps(record) + "\n")
 
 
-def select_bottleneck_service() -> str | None:
+def select_eligible_services() -> list[str]:
     """
-    Select service with highest p95_latency / SLO_THRESHOLD ratio.
-    Falls back to front-end if no metrics available.
+    Select ALL services that are violating SLO and eligible for scaling.
+    Each service is evaluated independently against cooldown and DB Guard.
+    Returns a list of service names that should be scaled up.
     """
-    best_service = None
-    best_score = 0.0
+    eligible = []
 
     for service in MONITORED_SERVICES:
         if not can_scale(service):
@@ -150,18 +150,21 @@ def select_bottleneck_service() -> str | None:
             continue
         latest = metrics[-1]
         p95 = latest.get("p95_latency_ms", 0.0)
-        score = p95 / SLO_THRESHOLD_MS
-        if score > best_score:
-            best_score = score
-            best_service = service
+        cpu = latest.get("cpu_usage_pct", latest.get("cpu_pct", 100.0))
 
-    if best_service is None:
-        if can_scale("front-end"):
-            log.warning("No metric data for bottleneck selection, defaulting to front-end")
-            return "front-end"
-        return None
+        # Only consider services actually violating the SLO
+        if p95 <= SLO_THRESHOLD_MS:
+            continue
 
-    return best_service
+        # DB Bottleneck Guard: if high latency but low CPU, skip it
+        if cpu < 25.0:
+            log.info(f"Skipping {service}: high latency ({p95:.1f}ms) but low CPU ({cpu:.1f}%) -- likely DB bottleneck")
+            continue
+
+        eligible.append(service)
+        log.info(f"Eligible for scale-up: {service} (p95={p95:.1f}ms, cpu={cpu:.1f}%)")
+
+    return eligible
 
 
 def handle_scale_up(service: str):
@@ -171,7 +174,17 @@ def handle_scale_up(service: str):
         return
 
     current = get_current_replicas(service)
-    target = min(current + 1, MAX_REPLICAS)
+    
+    # Proportional scaling
+    increment = 1
+    metrics = recent_metrics.get(service, [])
+    if metrics:
+        p95 = metrics[-1].get("p95_latency_ms", 0.0)
+        ratio = p95 / SLO_THRESHOLD_MS
+        if ratio > 1.5:
+            increment = min(int(ratio), 5)  # Cap increment at 5 to avoid explosive scaling
+
+    target = min(current + increment, MAX_REPLICAS)
 
     if target == current:
         log.info(f"{service} already at MAX_REPLICAS ({MAX_REPLICAS}), skipping")
@@ -301,13 +314,14 @@ def run():
                         log.info(f"[DECISION] Received: {decision} for {service}")
                         
                         if "SCALE UP" in decision or "SCALE_UP" in decision:
-                            # Select bottleneck service (highest p95/SLO ratio)
-                            bottleneck = select_bottleneck_service()
-                            if bottleneck:
-                                log.info(f"[BOTTLENECK] Selected {bottleneck} for scale-up")
-                                handle_scale_up(bottleneck)
+                            # Scale ALL eligible services independently (parallel per-service scaling)
+                            eligible = select_eligible_services()
+                            if eligible:
+                                for svc in eligible:
+                                    log.info(f"[PARALLEL] Scaling up {svc}")
+                                    handle_scale_up(svc)
                             else:
-                                log.warning("[BOTTLENECK] No service available for scale-up (all in cooldown)")
+                                log.info("[PARALLEL] No services eligible for scale-up (all in cooldown, below SLO, or DB-guarded)")
 
             time.sleep(0.1)
 
